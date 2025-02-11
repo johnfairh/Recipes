@@ -38,6 +38,12 @@ struct ContentView: View {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
+
+                ToolbarItem {
+                    Button(action: exportDatabase) {
+                        Label("Export Database", systemImage: "square.and.arrow.up.on.square")
+                    }
+                }
             }
         } detail: {
             Text("Select an item")
@@ -57,6 +63,10 @@ struct ContentView: View {
                 modelContext.delete(items[index])
             }
         }
+    }
+
+    private func exportDatabase() {
+        DatabaseLoader.importExport.export()
     }
 }
 
