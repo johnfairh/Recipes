@@ -7,15 +7,43 @@
 import SwiftUI
 
 struct LogView: View {
-    @Environment(\.dismiss) var dismiss
+    var body: some View {
+        NavigationStack {
+            LogContentView()
+                .navigationTitle("Log")
+                .navigationBarTitleDisplayMode(.inline)
+                .padding()
+        }
+    }
+}
+
+struct LogContentView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(Log.self) private var log
 
     var body: some View {
-            Text("Log")
-
-            Button {
-                dismiss()
-            } label: {
-                Text("OK")
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                ForEach(log.lines) { line in
+                    (Text(line.date, style: .time)
+                        .italic()
+                        .fontWeight(.light) +
+                     Text(" \(line.line)"))
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
+        }
+
+        Button {
+            dismiss()
+        } label: {
+            Text("OK")
+        }
+        Button {
+            Log.log("Ooh")
+        } label: {
+            Text("Test")
+        }
     }
 }

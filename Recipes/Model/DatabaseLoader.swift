@@ -14,7 +14,7 @@ enum DatabaseLoader {
 
     static let importExport = AppGroupImportExport(appGroup: appGroupName, filePrefix: storeName)
 
-    static var modelContainer: ModelContainer {
+    static var modelContainer: ModelContainer = {
         importExport.checkForImport()
 
         let modelConfiguration = ModelConfiguration(storeName, groupContainer: .identifier(appGroupName))
@@ -23,17 +23,19 @@ enum DatabaseLoader {
             Item.self,
         ])
 
+        Log.log("123")
+
         do {
             let modelContainer = try ModelContainer(for: schema, configurations: modelConfiguration)
-            print("Using database \(modelContainer.configurations.first!.url.path)")
+            Log.log("Using database \(modelContainer.configurations.first!.url.path)")
             return modelContainer
         }
         catch {
-            print("Model init failed, falling back to in-memory: \(error)") // XXX logging
+            Log.log("Model init failed, falling back to in-memory: \(error)") // XXX logging
             let memoryConfiguration = ModelConfiguration(isStoredInMemoryOnly: true)
             return try! ModelContainer(for: schema, configurations: memoryConfiguration)
         }
-    }
+    }()
 }
 
 // macOS

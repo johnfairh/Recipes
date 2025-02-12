@@ -15,6 +15,7 @@ struct RecipesApp: App {
             AppTabView()
         }
         .modelContainer(DatabaseLoader.modelContainer)
+        .environment(Log.shared)
     }
 }
 

@@ -33,7 +33,7 @@ struct BooksView: View {
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
 #endif
             .toolbar {
-                devMenu
+                DevMenu
 
                 ToolbarItem {
                     Button(action: addItem) {
@@ -58,7 +58,7 @@ struct BooksView: View {
     }
 
     @ToolbarContentBuilder
-    private var devMenu: some ToolbarContent {
+    private var DevMenu: some ToolbarContent {
         ToolbarItem {
             Menu {
                 Button {
