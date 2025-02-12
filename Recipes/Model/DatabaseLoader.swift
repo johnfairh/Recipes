@@ -15,6 +15,7 @@ enum DatabaseLoader {
     static let importExport = AppGroupImportExport(appGroup: appGroupName, filePrefix: storeName)
 
     static var modelContainer: ModelContainer = {
+        importExport.checkForReset()
         importExport.checkForImport()
 
         let modelConfiguration = ModelConfiguration(storeName, groupContainer: .identifier(appGroupName))
@@ -131,5 +132,35 @@ struct AppGroupImportExport {
         }
         copy(fileURLs: fileURLs, to: appContainerURL, suffix: Self.exportedSuffix)
         Log.log("Export - exported files: \(fileURLs.map(\.lastPathComponent))")
+    }
+
+    // Reset - set up so that next time we start the app, the real DB will be erased
+    // before we start up
+
+    static let resetFilename = "RESET"
+
+    var resetFileURL: URL {
+        appContainerURL.appending(component: Self.resetFilename)
+    }
+
+    func testAndClearReset() -> Bool {
+        let resetFile = resetFileURL
+        defer { try? FileManager.default.removeItem(at: resetFile) }
+        return FileManager.default.fileExists(atPath: resetFile.path)
+    }
+
+    func reset() {
+        Log.log("Reset - touching file \(resetFileURL.path)")
+        FileManager.default.createFile(atPath: resetFileURL.path, contents: nil)
+    }
+
+    func checkForReset() {
+        let reset = testAndClearReset()
+        Log.log("Import - reset required: \(reset)")
+        guard reset else { return }
+
+        let fileURLs = matchingFiles(in: groupContainerURL)
+        delete(fileURLs: fileURLs)
+        Log.log("Import - reset - deleted files: \(fileURLs.map(\.lastPathComponent))")
     }
 }

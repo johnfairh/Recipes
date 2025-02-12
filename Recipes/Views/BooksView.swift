@@ -36,9 +36,7 @@ struct BooksView: View {
                 DevMenu
 
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                    Button("Add Item", systemImage: "plus", action: addItem)
                 }
             }
         } detail: {
@@ -48,8 +46,10 @@ struct BooksView: View {
             "Are you sure?",
             isPresented: $isCheckingReset
         ) {
-            Button("Reset all data?", role: .destructive) {
-                Log.log("Reset!")
+            Button("Reset all data and quit Recipes?", role: .destructive) {
+                DatabaseLoader.importExport.reset()
+                try? modelContext.save()
+                exit(0) // I guess
             }
         }
         .sheet(isPresented: $isShowingLog) {
@@ -61,20 +61,14 @@ struct BooksView: View {
     private var DevMenu: some ToolbarContent {
         ToolbarItem {
             Menu {
-                Button {
+                Button("Log", systemImage: "pencil.and.list.clipboard") {
                     isShowingLog = true
-                } label: {
-                    Label("Log", systemImage: "pencil.and.list.clipboard")
                 }
-                Button {
+                Button("Export", systemImage: "square.and.arrow.up.on.square") {
                     DatabaseLoader.importExport.export()
-                } label: {
-                    Label("Export", systemImage: "square.and.arrow.up.on.square")
                 }
-                Button(role: .destructive) {
+                Button("Reset", systemImage: "exclamationmark.square", role: .destructive) {
                     isCheckingReset = true
-                } label: {
-                    Label("Reset", systemImage: "exclamationmark.square")
                 }
             } label: {
                 Label("Dev", systemImage: "gear")
