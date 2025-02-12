@@ -1,14 +1,15 @@
 //
-//  ContentView.swift
+//  RecipesView.swift
 //  Recipes
 //
-//  Created by John on 11/02/2025.
+//  Created by John on 12/02/2025.
 //
+
 
 import SwiftUI
 import SwiftData
 
-struct ContentView: View {
+struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
 
@@ -39,11 +40,6 @@ struct ContentView: View {
                     }
                 }
 
-                ToolbarItem {
-                    Button(action: exportDatabase) {
-                        Label("Export Database", systemImage: "square.and.arrow.up.on.square")
-                    }
-                }
             }
         } detail: {
             Text("Select an item")
@@ -64,13 +60,9 @@ struct ContentView: View {
             }
         }
     }
-
-    private func exportDatabase() {
-        DatabaseLoader.importExport.export()
-    }
 }
 
 #Preview {
-    ContentView()
+    RecipesView()
         .modelContainer(for: Item.self, inMemory: true)
 }

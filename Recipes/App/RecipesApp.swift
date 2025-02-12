@@ -21,15 +21,12 @@ struct RecipesApp: App {
 struct AppTabView: View {
     var body: some View {
         TabView {
-            ContentView()
-                .tabItem {
-                    Label("Recipes", systemImage: "fork.knife.circle")
-                }
-
-            ContentView()
-                .tabItem {
-                    Label("Recipe Books", systemImage: "books.vertical.circle")
-                }
+            Tab("Recipes", systemImage: "fork.knife.circle") {
+                RecipesView()
+            }
+            Tab("Books", systemImage: "books.vertical.circle") {
+                BooksView()
+            }
         }
     }
 }
