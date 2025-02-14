@@ -24,11 +24,12 @@ class Recipe {
     /// Properties
     var isMeal: Bool
     var servingsCount: UInt?
+    var quantity: String?
 
     /// Freeform
     var notes: String
 
-    init(name: String, book: Book, pageNumber: UInt?, url: String?, isMeal: Bool, servingsCount: UInt?) {
+    init(name: String, book: Book, pageNumber: UInt?, url: String?, isMeal: Bool, servingsCount: UInt?, quantity: String?, notes: String) {
         self.creationTime = Date.now
         self.name = name
         self.book = book
@@ -36,7 +37,8 @@ class Recipe {
         self.url = url
         self.isMeal = isMeal
         self.servingsCount = servingsCount
-        self.notes = ""
+        self.quantity = quantity
+        self.notes = notes
     }
 }
 

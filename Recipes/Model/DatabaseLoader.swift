@@ -37,15 +37,15 @@ enum DatabaseLoader {
     }()
 
     static func createObjects(modelContext: ModelContext) {
-        let brain = Book(shortName: "Brain", longName: "Traditional recipes", symbolName: "brain.head.profile", hasPageNumbers: false, sortOrder: 0)
-        let purple = Book(shortName: "Purple", longName: "Purple exercise book", symbolName: "book.closed", hasPageNumbers: true, sortOrder: 1)
+        let purple = Book(shortName: "Purple", longName: "Purple exercise book", symbolName: "book.closed", hasPageNumbers: true, sortOrder: 0)
+        let brain = Book(shortName: "Brain", longName: "Traditional recipes", symbolName: "brain.head.profile", hasPageNumbers: false, sortOrder: 1)
 
-        let pasta = Recipe(name: "Pasta", book: brain, pageNumber: nil, url: nil, isMeal: true, servingsCount: 2)
+        let pasta = Recipe(name: "Pasta", book: brain, pageNumber: nil, url: nil, isMeal: true, servingsCount: 2, quantity: nil, notes: "")
 
-        let soup = Recipe(name: "Chilli Soup", book: purple, pageNumber: 22, url: nil, isMeal: true, servingsCount: 4)
-        let risotto = Recipe(name: "Risotto", book: purple, pageNumber: 13, url: nil, isMeal: true, servingsCount: 3)
+        let soup = Recipe(name: "Chilli Soup", book: purple, pageNumber: 22, url: nil, isMeal: true, servingsCount: 4, quantity: nil, notes: "")
+        let risotto = Recipe(name: "Risotto", book: purple, pageNumber: 13, url: nil, isMeal: true, servingsCount: 3, quantity: nil, notes: "")
 
-        let cake = Recipe(name: "Chocolate Cake", book: purple, pageNumber: 100, url: nil, isMeal: false, servingsCount: nil)
+        let cake = Recipe(name: "Chocolate Cake", book: purple, pageNumber: 100, url: nil, isMeal: false, servingsCount: nil, quantity: "8x8 inch tray", notes: "")
 
         modelContext.insert(brain)
         modelContext.insert(purple)

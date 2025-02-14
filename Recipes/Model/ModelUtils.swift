@@ -52,3 +52,9 @@ import Foundation
 func IsPreview() -> Bool {
     ProcessInfo.processInfo.processName == "XCPreviewAgent"
 }
+
+extension String {
+    var emptyNil: String? {
+        isEmpty ? nil : self
+    }
+}

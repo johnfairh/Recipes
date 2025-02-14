@@ -47,7 +47,7 @@ struct BooksView: View {
                 DevMenu
 
                 ToolbarItem {
-                    Button("Add Item", systemImage: "plus") {
+                    Button("Add Book", systemImage: "plus") {
                         isShowingCreate = true
                     }
                 }

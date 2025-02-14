@@ -48,10 +48,14 @@ struct CreateBookView: View {
                         dismiss()
                     }
                     .bold()
-                    .disabled(shortName.isEmpty)
+                    .disabled(!canSave)
                 }
             }
         }
+    }
+
+    private var canSave: Bool {
+        !shortName.isEmpty
     }
 
     private func createNewBook() {

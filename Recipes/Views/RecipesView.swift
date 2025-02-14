@@ -22,6 +22,8 @@ struct RecipesView: View {
 
     @State private var selected: Recipe? = nil
 
+    @State private var isShowingCreate: Bool = false
+
     var body: some View {
         NavigationSplitView {
             List {
@@ -65,22 +67,17 @@ struct RecipesView: View {
 #endif
             .toolbar {
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    Button("Add Recipe", systemImage: "plus") {
+                        isShowingCreate = true
                     }
                 }
-
             }
         } detail: {
             Text("Select an item")
         }
-    }
-
-    private func addItem() {
-//        withAnimation {
-//            let newItem = Item(timestamp: Date())
-//            modelContext.insert(newItem)
-//        }
+        .sheet(isPresented: $isShowingCreate) {
+            CreateRecipeView()
+        }
     }
 
     private func deleteItems(offsets: IndexSet) {
