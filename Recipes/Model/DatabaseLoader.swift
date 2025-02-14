@@ -14,29 +14,52 @@ enum DatabaseLoader {
 
     static let importExport = AppGroupImportExport(appGroup: appGroupName, filePrefix: storeName)
 
+    static let schema = Schema([
+        Book.self,
+        Recipe.self
+    ])
+
     static var modelContainer: ModelContainer = {
         importExport.checkForReset()
         importExport.checkForImport()
 
         let modelConfiguration = ModelConfiguration(storeName, groupContainer: .identifier(appGroupName))
 
-        let schema = Schema([
-            Item.self,
-        ])
-
-        Log.log("123")
-
         do {
             let modelContainer = try ModelContainer(for: schema, configurations: modelConfiguration)
             Log.log("Using database \(modelContainer.configurations.first!.url.path)")
             return modelContainer
-        }
-        catch {
+        } catch {
             Log.log("Model init failed, falling back to in-memory: \(error)") // XXX logging
             let memoryConfiguration = ModelConfiguration(isStoredInMemoryOnly: true)
             return try! ModelContainer(for: schema, configurations: memoryConfiguration)
         }
     }()
+
+    static func createObjects(modelContext: ModelContext) {
+        let brain = Book(shortName: "Brain", longName: "Traditional recipes", symbolName: "brain.head.profile", hasPageNumbers: false, sortOrder: 0)
+        let purple = Book(shortName: "Purple", longName: "Purple exercise book", symbolName: "book.closed", hasPageNumbers: true, sortOrder: 1)
+
+        let pasta = Recipe(name: "Pasta", book: brain, pageNumber: nil, url: nil, isMeal: true, servingsCount: 2)
+
+        let soup = Recipe(name: "Chilli Soup", book: purple, pageNumber: 22, url: nil, isMeal: true, servingsCount: 4)
+        let risotto = Recipe(name: "Risotto", book: purple, pageNumber: 13, url: nil, isMeal: true, servingsCount: 3)
+
+        let cake = Recipe(name: "Chocolate Cake", book: purple, pageNumber: 100, url: nil, isMeal: false, servingsCount: nil)
+
+        modelContext.insert(brain)
+        modelContext.insert(purple)
+        modelContext.insert(pasta)
+        modelContext.insert(soup)
+        modelContext.insert(risotto)
+        modelContext.insert(cake)
+
+        do {
+           try modelContext.save()
+        } catch {
+            Log.log("Failed to save model context: \(error)")
+        }
+    }
 }
 
 // macOS

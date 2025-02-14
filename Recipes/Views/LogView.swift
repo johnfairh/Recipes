@@ -35,15 +35,8 @@ struct LogContentView: View {
             }
         }
 
-        Button {
+        Button("OK") {
             dismiss()
-        } label: {
-            Text("OK")
-        }
-        Button {
-            Log.log("Ooh")
-        } label: {
-            Text("Test")
         }
     }
 }

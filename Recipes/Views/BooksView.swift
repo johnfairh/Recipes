@@ -11,7 +11,7 @@ import SwiftData
 
 struct BooksView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query(sort: \Book.sortOrder) private var books: [Book]
 
     @State private var isCheckingReset: Bool = false
     @State private var isShowingLog: Bool = false
@@ -19,11 +19,20 @@ struct BooksView: View {
     var body: some View {
         NavigationSplitView {
             List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                ForEach(books) { book in
+                    HStack {
+                        Image(systemName: book.symbolName)
+                            .imageScale(.large)
+                            .foregroundStyle(Color.accentColor)
+                            .frame(minWidth: 32, maxWidth: 32)
+                        VStack(alignment: .leading) {
+                            Text(book.shortName).font(.title3)
+                            Text(book.longName).font(.body)
+                        }
+                        .padding(.leading, 8)
+                        Spacer()
+                        Text(book.recipes.count.description)
+
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -67,6 +76,9 @@ struct BooksView: View {
                 Button("Export", systemImage: "square.and.arrow.up.on.square") {
                     DatabaseLoader.importExport.export()
                 }
+                Button("Defaults", systemImage: "book.and.wrench.fill") {
+                    DatabaseLoader.createObjects(modelContext: modelContext)
+                }
                 Button("Reset", systemImage: "exclamationmark.square", role: .destructive) {
                     isCheckingReset = true
                 }
@@ -78,22 +90,20 @@ struct BooksView: View {
 
     private func addItem() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+//            let newItem = Item(timestamp: Date())
+//            modelContext.insert(newItem)
         }
     }
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+//            for index in offsets {
+//                modelContext.delete(items[index])
+//            }
         }
     }
 }
 
-#Preview {
+#Preview(traits: .previewObjects) {
     BooksView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
-
