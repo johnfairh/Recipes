@@ -40,3 +40,11 @@ class Book {
 
 extension Book: WithSortOrder {}
 
+extension Book {
+    static let symbolNames = [
+        "book.closed",
+        "brain.head.profile"
+    ]
+
+    static let defaultSymbolName = symbolNames[0]
+}

@@ -19,6 +19,7 @@
 		02C1449F2D5E3C90009C99CF /* ModelUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C1449E2D5E3C8D009C99CF /* ModelUtils.swift */; };
 		02C144A42D5E4424009C99CF /* DefaultObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C144A22D5E42A2009C99CF /* DefaultObjects.swift */; };
 		02C144A62D5E45D4009C99CF /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C144A52D5E45D1009C99CF /* Recipe.swift */; };
+		02C144A82D5F5F67009C99CF /* CreateBookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C144A72D5F5F64009C99CF /* CreateBookView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		02C1449E2D5E3C8D009C99CF /* ModelUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelUtils.swift; sourceTree = "<group>"; };
 		02C144A22D5E42A2009C99CF /* DefaultObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultObjects.swift; sourceTree = "<group>"; };
 		02C144A52D5E45D1009C99CF /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		02C144A72D5F5F64009C99CF /* CreateBookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateBookView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			children = (
 				02C144962D5CADAB009C99CF /* RecipesView.swift */,
 				02C144982D5CADD4009C99CF /* BooksView.swift */,
+				02C144A72D5F5F64009C99CF /* CreateBookView.swift */,
 				02C1449A2D5CC014009C99CF /* LogView.swift */,
 			);
 			path = Views;
@@ -198,6 +201,7 @@
 				02C144972D5CADB5009C99CF /* RecipesView.swift in Sources */,
 				02C144932D5B8836009C99CF /* DatabaseLoader.swift in Sources */,
 				02C144992D5CADD6009C99CF /* BooksView.swift in Sources */,
+				02C144A82D5F5F67009C99CF /* CreateBookView.swift in Sources */,
 				02C1449B2D5CC015009C99CF /* LogView.swift in Sources */,
 				02C144A62D5E45D4009C99CF /* Recipe.swift in Sources */,
 			);

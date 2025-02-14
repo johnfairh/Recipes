@@ -16,6 +16,8 @@ struct BooksView: View {
     @State private var isCheckingReset: Bool = false
     @State private var isShowingLog: Bool = false
 
+    @State private var isShowingCreate: Bool = false
+
     var body: some View {
         NavigationSplitView {
             List {
@@ -31,7 +33,7 @@ struct BooksView: View {
                         }
                         .padding(.leading, 8)
                         Spacer()
-                        Text(book.recipes.count.description)
+                        Text("\(book.recipes.count.description) \(book.sortOrder)")
 
                     }
                 }
@@ -45,7 +47,9 @@ struct BooksView: View {
                 DevMenu
 
                 ToolbarItem {
-                    Button("Add Item", systemImage: "plus", action: addItem)
+                    Button("Add Item", systemImage: "plus") {
+                        isShowingCreate = true
+                    }
                 }
             }
         } detail: {
@@ -63,6 +67,9 @@ struct BooksView: View {
         }
         .sheet(isPresented: $isShowingLog) {
             LogView()
+        }
+        .sheet(isPresented: $isShowingCreate) {
+            CreateBookView()
         }
     }
 
@@ -85,13 +92,6 @@ struct BooksView: View {
             } label: {
                 Label("Dev", systemImage: "gear")
             }
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-//            let newItem = Item(timestamp: Date())
-//            modelContext.insert(newItem)
         }
     }
 
