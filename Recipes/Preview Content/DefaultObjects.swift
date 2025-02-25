@@ -11,7 +11,7 @@ import SwiftData
 struct PreviewObjects: PreviewModifier {
     static func makeSharedContext() throws -> ModelContainer {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: DatabaseLoader.schema, configurations: config)
+        let container = try ModelContainer(for: Schema(versionedSchema: CurrentSchema.self), configurations: config)
         DatabaseLoader.createObjects(modelContext: container.mainContext)
         return container
     }

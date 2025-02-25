@@ -15,5 +15,16 @@ enum Version1Schema: VersionedSchema {
     static var versionIdentifier = Schema.Version(0, 0, 1)
 }
 
-typealias Recipe = Version1Schema.Recipe
-typealias Book = Version1Schema.Book
+typealias CurrentSchema = Version1Schema
+
+typealias Recipe = CurrentSchema.Recipe
+typealias Book = CurrentSchema.Book
+
+enum MigrationPlan: SchemaMigrationPlan {
+    static var schemas: [any VersionedSchema.Type] = [
+        Version1Schema.self
+    ]
+
+    static var stages: [MigrationStage] = [
+    ]
+}

@@ -36,6 +36,8 @@ extension Version1Schema {
         /// Freeform
         var notes: String
 
+        var what: Int? = nil
+
         init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, notes: String) {
             self.creationTime = Date.now
             self.name = name
