@@ -21,21 +21,27 @@ class Recipe {
     var pageNumber: UInt?
     var url: String?
 
+    enum Kind: Int, Codable {
+        case meal = 1
+        case sweet = 2
+        case other = 3
+    }
+
     /// Properties
-    var isMeal: Bool
+    var kind: Kind
     var servingsCount: UInt?
     var quantity: String?
 
     /// Freeform
     var notes: String
 
-    init(name: String, book: Book, pageNumber: UInt?, url: String?, isMeal: Bool, servingsCount: UInt?, quantity: String?, notes: String) {
+    init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, notes: String) {
         self.creationTime = Date.now
         self.name = name
         self.book = book
         self.pageNumber = pageNumber
         self.url = url
-        self.isMeal = isMeal
+        self.kind = kind
         self.servingsCount = servingsCount
         self.quantity = quantity
         self.notes = notes
@@ -66,6 +72,10 @@ extension Recipe {
 
     /// System image name
     var symbolName: String {
-        isMeal ? "carrot" : "birthday.cake"
+        switch kind {
+        case .meal: return "carrot"
+        case .sweet: return "birthday.cake"
+        case .other: return "popcorn"
+        }
     }
 }

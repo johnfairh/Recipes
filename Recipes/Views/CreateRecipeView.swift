@@ -18,7 +18,7 @@ struct CreateRecipeView: View {
     @State var book: Book?
     @State var pageNumber: UInt? = nil
     @State var url: String = ""
-    @State var isMeal: Bool = true
+    @State var kind: Recipe.Kind = .meal
     @State var servings: UInt = 1
     @State var quantity: String = ""
     @State var notes: String = ""
@@ -31,11 +31,12 @@ struct CreateRecipeView: View {
                 }
 
                 Section {
-                    Picker("Type", selection: $isMeal) {
-                        Text("Meal").tag(true)
-                        Text("Sweet").tag(false)
+                    Picker("Type", selection: $kind) {
+                        Text("Meal").tag(Recipe.Kind.meal)
+                        Text("Sweet").tag(Recipe.Kind.sweet)
+                        Text("Other").tag(Recipe.Kind.other)
                     }
-                    if isMeal {
+                    if kind == .meal {
                         Picker("Servings", selection: $servings) {
                             ForEach(UInt(1)..<7, id: \.self) { count in
                                 Text(count.description).tag(count)
@@ -99,7 +100,7 @@ struct CreateRecipeView: View {
             book: book!,
             pageNumber: pageNumber,
             url: url.emptyNil,
-            isMeal: isMeal,
+            kind: kind,
             servingsCount: servings,
             quantity: quantity.emptyNil,
             notes: notes
