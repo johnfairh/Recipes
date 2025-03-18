@@ -59,6 +59,7 @@ struct CreateBookView: View {
     }
 
     private func createNewBook() {
+        Log.log("Create book '\(shortName)'")
         let book = Book(shortName: shortName, longName: longName, symbolName: symbolName, hasPageNumbers: hasPageNumbers, sortOrder: Book.nextSortOrder(modelContext: modelContext))
         modelContext.insert(book)
         modelContext.trySave()

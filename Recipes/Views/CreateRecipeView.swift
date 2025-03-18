@@ -95,6 +95,7 @@ struct CreateRecipeView: View {
     }
 
     private func createNewRecipe() {
+        Log.log("Create recipe '\(name)'")
         let recipe = Recipe(
             name: name,
             book: book!,

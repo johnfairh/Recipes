@@ -34,8 +34,8 @@ struct BooksView: View {
                         .padding(.leading, 8)
                         Spacer()
                         Text("\(book.recipes.count.description) \(book.sortOrder)")
-
                     }
+                    .deleteDisabled(book.recipes.count > 0)
                 }
                 .onDelete(perform: deleteItems)
             }
@@ -97,9 +97,11 @@ struct BooksView: View {
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
-//            for index in offsets {
-//                modelContext.delete(items[index])
-//            }
+            for index in offsets {
+                let book = books[index]
+                Log.log("Delete book \(book.shortName)")
+                modelContext.delete(book)
+            }
         }
     }
 }

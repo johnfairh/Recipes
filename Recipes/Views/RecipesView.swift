@@ -81,11 +81,13 @@ struct RecipesView: View {
     }
 
     private func deleteItems(offsets: IndexSet) {
-//        withAnimation {
-//            for index in offsets {
-//                modelContext.delete(items[index])
-//            }
-//        }
+        withAnimation {
+            for index in offsets {
+                let recipe = recipes[index]
+                Log.log("Delete recipe '\(recipe.name)'")
+                modelContext.delete(recipe)
+            }
+        }
     }
 }
 
