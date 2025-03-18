@@ -71,6 +71,11 @@ struct RecipesView: View {
                         isShowingCreate = true
                     }
                 }
+                ToolbarItem {
+                    Button("Undo", systemImage: "arrow.uturn.backward") {
+                        modelContext.undo()
+                    }
+                }
             }
         } detail: {
             Text("Select an item")

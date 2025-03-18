@@ -58,3 +58,9 @@ extension String {
         isEmpty ? nil : self
     }
 }
+
+extension ModelContext {
+    func undo() {
+        undoManager?.undo()
+    }
+}

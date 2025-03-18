@@ -88,10 +88,12 @@ struct CreateRecipeView: View {
     }
 
     private var isInvalid: Bool {
-        name.isEmpty ||
-        book == nil ||
-        (book != nil && pageNumber == nil)
+        guard let book else {
+            return true
+        }
 
+        return name.isEmpty ||
+               (book.hasPageNumbers && pageNumber == nil)
     }
 
     private func createNewRecipe() {

@@ -14,6 +14,7 @@ enum DatabaseLoader {
 
     static let importExport = AppGroupImportExport(appGroup: appGroupName, filePrefix: storeName)
 
+    @MainActor
     static var modelContainer: ModelContainer = {
         do {
             importExport.checkForReset()
@@ -27,6 +28,8 @@ enum DatabaseLoader {
                 configurations: modelConfiguration
             )
             Log.log("Using database \(modelContainer.configurations.first!.url.path)")
+
+            modelContainer.mainContext.undoManager = UndoManager()
 
             return modelContainer
         } catch {
