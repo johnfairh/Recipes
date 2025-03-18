@@ -14,6 +14,8 @@ struct CreateRecipeView: View {
 
     @Query(sort: \Book.sortOrder) private var books: [Book]
 
+    @FocusState private var onAppearFocus: Bool
+
     @State var name: String = ""
     @State var book: Book?
     @State var pageNumber: UInt? = nil
@@ -28,6 +30,7 @@ struct CreateRecipeView: View {
             Form {
                 Section {
                     TextField("Name", text: $name)
+                        .focused($onAppearFocus)
                 }
 
                 Section {
@@ -83,6 +86,7 @@ struct CreateRecipeView: View {
             }
         }
         .onAppear {
+            onAppearFocus = true
             book = books.first
         }
     }
@@ -106,6 +110,7 @@ struct CreateRecipeView: View {
             kind: kind,
             servingsCount: servings,
             quantity: quantity.emptyNil,
+            isImported: true, // XXX
             notes: notes
         )
         modelContext.insert(recipe)

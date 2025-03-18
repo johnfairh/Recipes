@@ -11,7 +11,7 @@ import Foundation
 extension Version1Schema {
     @Model
     class Recipe {
-        /// Timestamp
+        /// Timestamp of this objects
         var creationTime: Date
 
         /// Name, possibly longish
@@ -33,12 +33,15 @@ extension Version1Schema {
         var servingsCount: UInt?
         var quantity: String?
 
+        /// Last-cooked timestamp; `nil` for never, `.importedRecipe` for something imported from paper records
+        var lastCookedTime: Date?
+
         /// Freeform
         var notes: String
 
         var what: Int? = nil
 
-        init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, notes: String) {
+        init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, isImported: Bool, notes: String) {
             self.creationTime = Date.now
             self.name = name
             self.book = book
@@ -47,6 +50,7 @@ extension Version1Schema {
             self.kind = kind
             self.servingsCount = servingsCount
             self.quantity = quantity
+            self.lastCookedTime = isImported ? .importedRecipe : nil
             self.notes = notes
         }
     }
@@ -80,6 +84,66 @@ extension Recipe {
         case .meal: return "carrot"
         case .sweet: return "birthday.cake"
         case .other: return "popcorn"
+        }
+    }
+}
+
+/// Last-cooked time
+
+extension Date {
+    static let importedRecipe = Date.distantPast
+
+    // I cannot figure out how to do this with the modern swift formatter, docs
+    // make me want to punch someone
+    static var spellOutFormatter: NumberFormatter = {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .spellOut
+        return numberFormatter
+    }()
+
+    private func spellOut(_ number: Int) -> String {
+        Self.spellOutFormatter.string(from: number as NSNumber)!
+    }
+
+    var whenWasThis: String {
+        let calendar = Calendar.current
+        let interval = calendar.dateComponents([.year, .month, .day], from: self, to: .now)
+
+        let year = interval.year ?? 0
+        let month = interval.month ?? 0
+        let day = interval.day ?? 0
+
+        if year > 0 {
+            return "more than a year ago"
+        }
+        if month > 1 {
+            return spellOut(month) + " months ago"
+        }
+        if month == 1 {
+            return "last month"
+        }
+        if day > 14 {
+            return spellOut(day / 7) + " weeks ago"
+        }
+        if day >= 7 {
+            return "last week"
+        }
+        if day > 1 {
+            return spellOut(day) + " days ago"
+        }
+        if day == 1 {
+            return "yesterday"
+        }
+        return "today"
+    }
+}
+
+extension Recipe {
+    var lastCookedText: String? {
+        switch lastCookedTime {
+        case .importedRecipe: return nil
+        case .none: return "Not made yet"
+        case .some(let date): return "Made \(date.whenWasThis)"
         }
     }
 }

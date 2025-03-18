@@ -43,6 +43,9 @@ struct RecipesView: View {
                                 // url
                                 // notes
                                 // creation date
+                                if let lastCookedText = recipe.lastCookedText {
+                                    Text(lastCookedText)
+                                }
                             }
                         }
                         .padding(.leading, 8)
