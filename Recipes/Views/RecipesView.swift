@@ -70,13 +70,15 @@ struct RecipesView: View {
 #endif
             .toolbar {
                 ToolbarItem {
-                    Button("Add Recipe", systemImage: "plus") {
-                        isShowingCreate = true
+                    Button("Undo", systemImage: "arrow.uturn.backward") {
+                        withAnimation {
+                            modelContext.undo()
+                        }
                     }
                 }
                 ToolbarItem {
-                    Button("Undo", systemImage: "arrow.uturn.backward") {
-                        modelContext.undo()
+                    Button("Add Recipe", systemImage: "plus") {
+                        isShowingCreate = true
                     }
                 }
             }

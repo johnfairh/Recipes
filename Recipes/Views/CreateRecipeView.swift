@@ -23,6 +23,7 @@ struct CreateRecipeView: View {
     @State var kind: Recipe.Kind = .meal
     @State var servings: UInt = 1
     @State var quantity: String = ""
+    @State var isBrandNew: Bool = false // true
     @State var notes: String = ""
 
     var body: some View {
@@ -61,6 +62,10 @@ struct CreateRecipeView: View {
                             .keyboardType(.numberPad)
                         TextField("URL", text: $url)
                     }
+                }
+
+                Section {
+                    Toggle("Brand new recipe", isOn: $isBrandNew)
                 }
 
                 Section {
@@ -110,7 +115,7 @@ struct CreateRecipeView: View {
             kind: kind,
             servingsCount: servings,
             quantity: quantity.emptyNil,
-            isImported: true, // XXX
+            isImported: !isBrandNew,
             notes: notes
         )
         modelContext.insert(recipe)
