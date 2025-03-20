@@ -146,4 +146,8 @@ extension Recipe {
         case .some(let date): return "Made \(date.whenWasThis)"
         }
     }
+
+    func updateLastCookedTime() {
+        lastCookedTime = .now
+    }
 }
