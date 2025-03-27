@@ -60,8 +60,8 @@ struct CreateRecipeView: View {
                     if let book, book.hasPageNumbers {
                         TextField("Page number", value: $pageNumber, formatter: NumberFormatter())
                             .keyboardType(.numberPad)
-                        TextField("URL", text: $url)
                     }
+                    TextField("URL", text: $url)
                 }
 
                 Section {

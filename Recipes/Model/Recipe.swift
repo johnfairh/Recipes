@@ -61,12 +61,12 @@ extension Recipe {
     /// Text describing the recipe's location
     var location: String {
         let pageText = pageNumber.map { ", p\($0)" } ?? ""
-        return book.shortName + pageText
+        return book.shortName.trimmingCharacters(in: .whitespaces) + pageText
     }
 
     /// Text describing servings
     var servings: String? {
-        servingsCount.map { "\($0) serving\($0 == 1 ? "" : "s")" }
+        quantity ?? servingsCount.map { "\($0) serving\($0 == 1 ? "" : "s")" }
     }
 
     /// Brief summary for list view
