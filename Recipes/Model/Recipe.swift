@@ -9,7 +9,8 @@ import SwiftData
 import Foundation
 
 /// Add ``cookings``
-/// Remove ``what`` (!)
+/// Remove ``what`` (oops)
+/// Add ``flagged``
 extension Version2Schema {
     @Model
     class Recipe {
@@ -44,6 +45,9 @@ extension Version2Schema {
         /// Cooking history
         @Relationship(deleteRule: .cascade, inverse: \Cooking.recipe) var cookings: [Cooking]
 
+        /// Flagged by user (default value here otherwise SwiftData craps out)
+        var flagged: Bool = false
+
         init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, isImported: Bool, notes: String) {
             self.creationTime = Date.now
             self.name = name
@@ -56,6 +60,7 @@ extension Version2Schema {
             self.lastCookedTime = isImported ? .importedRecipe : nil
             self.notes = notes
             self.cookings = []
+            self.flagged = false
         }
     }
 }

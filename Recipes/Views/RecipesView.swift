@@ -50,6 +50,7 @@ struct RecipesView: View {
                                 if let servings = recipe.servings {
                                     Text(servings).font(.body)
                                 }
+                                Text("FLAGGED = \(recipe.flagged)")
                                 if selected == recipe {
                                     Text(recipe.location)
                                     // url
@@ -82,6 +83,12 @@ struct RecipesView: View {
                                 modelContext.trySave()
                             }
                             .tint(.green)
+                            Button(recipe.flagged ? "Unflag" : "Flag", systemImage: "flag") {
+                                Log.log("Updated flagged for recipe '\(recipe.name)'")
+                                recipe.flagged.toggle()
+                                modelContext.trySave()
+                            }
+                            .tint(.blue)
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button("Delete", systemImage: "trash", role: .destructive) {
