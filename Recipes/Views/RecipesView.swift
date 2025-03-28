@@ -77,6 +77,8 @@ struct RecipesView: View {
                             Button("Cooked", systemImage: "fork.knife") {
                                 Log.log("Update cooked for recipe '\(recipe.name)'")
                                 recipe.updateLastCookedTime()
+                                let cooking = Cooking(recipe: recipe, notes: nil, timestamp: recipe.lastCookedTime)
+                                modelContext.insert(cooking)
                                 modelContext.trySave()
                             }
                             .tint(.green)

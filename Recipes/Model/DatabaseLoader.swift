@@ -55,7 +55,7 @@ enum DatabaseLoader {
         cake.lastCookedTime = Date.now
 
         let nuts = Recipe(name: "Bar nuts", book: purple, pageNumber: 125, url: nil, kind: .other, servingsCount: nil, quantity: "A handful", isImported: true, notes: "")
-        cake.lastCookedTime = Date.now.addingTimeInterval(-(60 * 60 * 24 * 7))
+        nuts.lastCookedTime = .now.addingTimeInterval(-(60 * 60 * 24 * 7))
 
         modelContext.insert(brain)
         modelContext.insert(purple)

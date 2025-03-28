@@ -56,6 +56,58 @@ extension Version1Schema {
     }
 }
 
+extension Version2Schema {
+    @Model
+    class Recipe {
+        /// Timestamp of this objects
+        var creationTime: Date
+
+        /// Name, possibly longish
+        var name: String
+
+        /// Location
+        var book: Book
+        var pageNumber: UInt?
+        var url: String?
+
+        enum Kind: Int, Codable {
+            case meal = 1
+            case sweet = 2
+            case other = 3
+        }
+
+        /// Properties
+        var kind: Kind
+        var servingsCount: UInt?
+        var quantity: String?
+
+        /// Last-cooked timestamp; `nil` for never, `.importedRecipe` for something imported from paper records
+        var lastCookedTime: Date?
+
+        /// Freeform
+        var notes: String
+
+        /// Cooking history
+        @Relationship(deleteRule: .cascade, inverse: \Cooking.recipe) var cookings: [Cooking]
+
+        init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, isImported: Bool, notes: String) {
+            self.creationTime = Date.now
+            self.name = name
+            self.book = book
+            self.pageNumber = pageNumber
+            self.url = url
+            self.kind = kind
+            self.servingsCount = servingsCount
+            self.quantity = quantity
+            self.lastCookedTime = isImported ? .importedRecipe : nil
+            self.notes = notes
+            self.cookings = []
+        }
+    }
+}
+
+// MARK: Utilities
+
 /// Presentation
 extension Recipe {
     /// Text describing the recipe's location
@@ -88,7 +140,7 @@ extension Recipe {
     }
 }
 
-/// Last-cooked time
+// MARK: Last-cooked time
 
 extension Date {
     static let importedRecipe = Date.distantPast
@@ -144,6 +196,13 @@ extension Recipe {
         case .importedRecipe: return nil
         case .none: return "Not made yet"
         case .some(let date): return "Made \(date.whenWasThis)"
+        }
+    }
+
+    var actualLastCookedTime: Date? {
+        switch lastCookedTime {
+        case .none, .importedRecipe: return nil
+        case .some(let date): return date
         }
     }
 

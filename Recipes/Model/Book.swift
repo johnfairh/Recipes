@@ -40,6 +40,12 @@ extension Version1Schema {
     }
 }
 
+extension Version2Schema {
+    typealias Book = Version1Schema.Book
+}
+
+// MARK: Extensions
+
 extension Book: WithSortOrder {}
 
 extension Book {
