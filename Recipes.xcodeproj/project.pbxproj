@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		021C93702D95C3E300CC442F /* Cooking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021C936F2D95C3CF00CC442F /* Cooking.swift */; };
+		021C93722D96CE9700CC442F /* Version1Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021C93712D96CE8D00CC442F /* Version1Models.swift */; };
 		023D0A5B2D6DFEB100AF8D3D /* Schemas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023D0A5A2D6DFEAC00AF8D3D /* Schemas.swift */; };
 		02C1448D2D5B8569009C99CF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02C144862D5B8569009C99CF /* Preview Assets.xcassets */; };
 		02C1448E2D5B8569009C99CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02C1448A2D5B8569009C99CF /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 
 /* Begin PBXFileReference section */
 		021C936F2D95C3CF00CC442F /* Cooking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cooking.swift; sourceTree = "<group>"; };
+		021C93712D96CE8D00CC442F /* Version1Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version1Models.swift; sourceTree = "<group>"; };
 		023D0A5A2D6DFEAC00AF8D3D /* Schemas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schemas.swift; sourceTree = "<group>"; };
 		02C1445B2D5B7BAC009C99CF /* Recipes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recipes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02C144822D5B8569009C99CF /* RecipesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesApp.swift; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 				02C1449E2D5E3C8D009C99CF /* ModelUtils.swift */,
 				02C144922D5B8824009C99CF /* DatabaseLoader.swift */,
 				023D0A5A2D6DFEAC00AF8D3D /* Schemas.swift */,
+				021C93712D96CE8D00CC442F /* Version1Models.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -203,6 +206,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				021C93702D95C3E300CC442F /* Cooking.swift in Sources */,
+				021C93722D96CE9700CC442F /* Version1Models.swift in Sources */,
 				02C144AA2D5F82CE009C99CF /* CreateRecipeView.swift in Sources */,
 				02C1449D2D5E3561009C99CF /* Book.swift in Sources */,
 				02C1449F2D5E3C90009C99CF /* ModelUtils.swift in Sources */,

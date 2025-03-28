@@ -7,7 +7,8 @@
 
 import SwiftData
 
-extension Version1Schema {
+/// No changes but need a separate class otherwise SwiftData crashes CoreData.
+extension Version2Schema {
     @Model
     class Book {
         /// Brief name for xref elsewhere
@@ -38,10 +39,6 @@ extension Version1Schema {
             self.sortOrder = sortOrder
         }
     }
-}
-
-extension Version2Schema {
-    typealias Book = Version1Schema.Book
 }
 
 // MARK: Extensions

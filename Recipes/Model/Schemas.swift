@@ -10,8 +10,8 @@ import SwiftData
 
 enum Version1Schema: VersionedSchema {
     static var models: [any PersistentModel.Type] = [
-        Recipe.self,
-        Book.self
+        Version1Schema.Recipe.self,
+        Version1Schema.Book.self
     ]
 
     static var versionIdentifier = Schema.Version(0, 0, 1)
@@ -19,9 +19,9 @@ enum Version1Schema: VersionedSchema {
 
 enum Version2Schema: VersionedSchema {
     static var models: [any PersistentModel.Type] = [
-        Recipe.self,
-        Book.self,
-        Cooking.self
+        Version2Schema.Recipe.self,
+        Version2Schema.Book.self,
+        Version2Schema.Cooking.self
     ]
 
     static var versionIdentifier = Schema.Version(0, 0, 2)
@@ -36,7 +36,7 @@ enum Version2Schema: VersionedSchema {
                 continue
             }
 
-            let cooking = Cooking(recipe: recipe, notes: nil)
+            let cooking = Cooking(recipe: recipe, notes: nil, timestamp: lastCooked)
             modelContext.insert(cooking)
         }
 
