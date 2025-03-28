@@ -18,7 +18,9 @@ extension Recipe {
 
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Recipe.name) private var recipes: [Recipe]
+
+    @SectionedQuery(\Recipe.flagged, sort: \Recipe.name, order: .forward)
+    private var recipes: SectionedResults<Bool, Recipe>
 
     @State private var selected: Recipe? = nil
 
@@ -26,7 +28,7 @@ struct RecipesView: View {
 
     @State private var searchText: String = ""
 
-    var filteredRecipes: [Recipe] {
+    var filteredRecipes: SectionedResults<Bool, Recipe> {
         if searchText.isEmpty {
             return recipes
         }
@@ -39,62 +41,66 @@ struct RecipesView: View {
                 if !searchText.isEmpty && filteredRecipes.isEmpty {
                     ContentUnavailableView.search
                 } else {
-                    ForEach(filteredRecipes) { recipe in
-                        HStack {
-                            Image(systemName: recipe.symbolName)
-                                .imageScale(.large)
-                                .foregroundStyle(Color.accentColor)
-                                .frame(minWidth: 32, maxWidth: 32)
-                            VStack(alignment: .leading) {
-                                Text(recipe.name).font(.title3)
-                                if let servings = recipe.servings {
-                                    Text(servings).font(.body)
+                    ForEach(filteredRecipes) { section in
+                        Section(section.id ? "Flagged" : "Regular") {
+                            ForEach(section) { recipe in
+                                HStack {
+                                    Image(systemName: recipe.symbolName)
+                                        .imageScale(.large)
+                                        .foregroundStyle(Color.accentColor)
+                                        .frame(minWidth: 32, maxWidth: 32)
+                                    VStack(alignment: .leading) {
+                                        Text(recipe.name).font(.title3)
+                                        if let servings = recipe.servings {
+                                            Text(servings).font(.body)
+                                        }
+                                        Text("FLAGGED = \(recipe.flagged)")
+                                        if selected == recipe {
+                                            Text(recipe.location)
+                                            // url
+                                            // notes
+                                            // creation date
+                                            if let lastCookedText = recipe.lastCookedText {
+                                                Text(lastCookedText)
+                                            }
+                                        }
+                                    }
+                                    .padding(.leading, 8)
+                                    Spacer()
                                 }
-                                Text("FLAGGED = \(recipe.flagged)")
-                                if selected == recipe {
-                                    Text(recipe.location)
-                                    // url
-                                    // notes
-                                    // creation date
-                                    if let lastCookedText = recipe.lastCookedText {
-                                        Text(lastCookedText)
+                                .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
+                                .onTapGesture {
+                                    if selected == recipe {
+                                        selected = nil
+                                    } else {
+                                        selected = recipe
                                     }
                                 }
-                            }
-                            .padding(.leading, 8)
-                            Spacer()
-                        }
-                        .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
-                        .onTapGesture {
-                            if selected == recipe {
-                                selected = nil
-                            } else {
-                                selected = recipe
-                            }
-                        }
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button("Cooked", systemImage: "fork.knife") {
-                                Log.log("Update cooked for recipe '\(recipe.name)'")
-                                recipe.updateLastCookedTime()
-                                let cooking = Cooking(recipe: recipe, notes: nil, timestamp: recipe.lastCookedTime)
-                                modelContext.insert(cooking)
-                                modelContext.trySave()
-                            }
-                            .tint(.green)
-                            Button(recipe.flagged ? "Unflag" : "Flag", systemImage: "flag") {
-                                Log.log("Updated flagged for recipe '\(recipe.name)'")
-                                recipe.flagged.toggle()
-                                modelContext.trySave()
-                            }
-                            .tint(.blue)
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button("Delete", systemImage: "trash", role: .destructive) {
-                                Log.log("Delete recipe '\(recipe.name)'")
-                                modelContext.delete(recipe)
-                                modelContext.trySave()
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
+                                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                    Button("Cooked", systemImage: "fork.knife") {
+                                        Log.log("Update cooked for recipe '\(recipe.name)'")
+                                        recipe.updateLastCookedTime()
+                                        let cooking = Cooking(recipe: recipe, notes: nil, timestamp: recipe.lastCookedTime)
+                                        modelContext.insert(cooking)
+                                        modelContext.trySave()
+                                    }
+                                    .tint(.green)
+                                    Button(recipe.flagged ? "Unflag" : "Flag", systemImage: "flag") {
+                                        Log.log("Updated flagged for recipe '\(recipe.name)'")
+                                        recipe.flagged.toggle()
+                                        modelContext.trySave()
+                                    }
+                                    .tint(.blue)
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button("Delete", systemImage: "trash", role: .destructive) {
+                                        Log.log("Delete recipe '\(recipe.name)'")
+                                        modelContext.delete(recipe)
+                                        modelContext.trySave()
+                                    }
+                                }
                             }
                         }
                     }
@@ -131,3 +137,49 @@ struct RecipesView: View {
 #Preview(traits: .previewObjects) {
     RecipesView()
 }
+
+/*
+ var body: some View {
+     NavigationSplitView {
+         if !searchText.isEmpty && filteredRecipes.isEmpty {
+             ContentUnavailableView.search
+         } else {
+             List(filteredRecipes) { section in
+                 Section(section.id) {
+                     ForEach(section) { recipe in
+                         HStack {
+                             Image(systemName: recipe.symbolName)
+                                 .imageScale(.large)
+                                 .foregroundStyle(Color.accentColor)
+                                 .frame(minWidth: 32, maxWidth: 32)
+                             VStack(alignment: .leading) {
+                                 Text(recipe.name).font(.title3)
+                                 if let servings = recipe.servings {
+                                     Text(servings).font(.body)
+                                 }
+                                 Text("FLAGGED = \(recipe.flagged)")
+                                 if selected == recipe {
+                                     Text(recipe.location)
+                                     // url
+                                     // notes
+                                     // creation date
+                                     if let lastCookedText = recipe.lastCookedText {
+                                         Text(lastCookedText)
+                                     }
+                                 }
+                             }
+                             .padding(.leading, 8)
+                             Spacer()
+                         }
+                         .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
+                         .onTapGesture {
+                             if selected == recipe {
+                                 selected = nil
+                             } else {
+                                 selected = recipe
+                             }
+                         }
+                         .listRowSeparator(.hidden)
+                         .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
+
+ */
