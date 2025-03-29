@@ -16,10 +16,19 @@ extension Recipe {
     }
 }
 
+extension Bool: @retroactive Comparable {
+    public static func <(lhs: Self, rhs: Self) -> Bool {
+        !lhs && rhs
+    }
+}
+
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
 
-    @SectionedQuery(\Recipe.flagged, sort: \Recipe.name, order: .forward)
+    @SectionedQuery(\Recipe.flagged, sort: [
+        .init(\Recipe.flagged, order: .reverse),
+        .init(\Recipe.name, order: .forward)
+    ])
     private var recipes: SectionedResults<Bool, Recipe>
 
     @State private var selected: Recipe? = nil
@@ -54,7 +63,6 @@ struct RecipesView: View {
                                         if let servings = recipe.servings {
                                             Text(servings).font(.body)
                                         }
-                                        Text("FLAGGED = \(recipe.flagged)")
                                         if selected == recipe {
                                             Text(recipe.location)
                                             // url

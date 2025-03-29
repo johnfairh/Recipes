@@ -9,10 +9,8 @@ import SwiftData
 import SwiftUI
 
 /// A collection of models retrieved from a SwiftData persistent store, grouped into sections.
-///
 public struct SectionedResults<SectionIdentifier, Result>: Equatable, RandomAccessCollection
 where SectionIdentifier: Hashable, Result: PersistentModel {
-    
     /// A type that represents an element in the collection.
     public typealias Element     = SectionedResults<SectionIdentifier, Result>.Section
     /// A type that represents a position in the collection.
@@ -25,11 +23,11 @@ where SectionIdentifier: Hashable, Result: PersistentModel {
     public typealias SubSequence = Slice<SectionedResults<SectionIdentifier, Result>>
 
     /// The key path that the system uses to group results into sections.
-    public var sectionIdentifier: KeyPath<Result, SectionIdentifier>
+    public let sectionIdentifier: KeyPath<Result, SectionIdentifier>
     /// The collection of results that share a specified identifier.
-    public var sections: [Section]
+    public let sections: [Section]
     /// The index of the first section in the results collection.
-    public var startIndex: Int = 0
+    public var startIndex: Int { 0 }
     /// The index that’s one greater than that of the last section.
     public var endIndex: Int { sections.count }
 
@@ -39,47 +37,64 @@ where SectionIdentifier: Hashable, Result: PersistentModel {
     }
 
     /// Conform to equatable
+    /// (JF: dunno what this is really for, perhaps SwiftUI stuff, ignores the keypath... also original version didn't  actually compare the elements??)
     public static func == (lhs: SectionedResults<SectionIdentifier, Result>, rhs: SectionedResults<SectionIdentifier, Result>) -> Bool {
-        if lhs.sections.count != rhs.sections.count { return false }
-        else if lhs.sections.count < 1 && rhs.sections.count < 1 { return true }
-        else {
-            for range in 0...lhs.sections.count-1 {
-                
-                if lhs.sections[range].elements.count != rhs.sections[range].elements.count {
-                    return false
-                }
-            }
+        guard lhs.sections.count == rhs.sections.count else {
+            return false
+        }
+        if lhs.sections.count == 0 && rhs.sections.count == 0 {
             return true
         }
+
+        for range in 0...lhs.sections.count-1 {
+            if lhs.sections[range].elements != rhs.sections[range].elements {
+                return false
+            }
+        }
+        return true
     }
 
-    internal init(sectionIdentifier: KeyPath<Result, SectionIdentifier>, results: [Result]) {
+    init(sectionIdentifier: KeyPath<Result, SectionIdentifier>, results: [Result]) {
         self.sectionIdentifier = sectionIdentifier
-        
-        let groupedResults = Dictionary(grouping: results) { result in
-            result[keyPath: sectionIdentifier]
+
+        var sections: [Section] = []
+
+        var currentResults: [Result] = []
+        var currentID: SectionIdentifier? = nil
+
+        for result in results {
+            let id = result[keyPath: sectionIdentifier]
+            if currentID == nil {
+                currentID = id
+            } else if id != currentID! {
+                sections.append(Section(id: currentID!, elements: currentResults))
+                currentResults = []
+                currentID = id
+            }
+            currentResults.append(result)
         }
-        
-        let identifiers = results.map { result in
-            result[keyPath: sectionIdentifier]
-        }.uniqued()
-        
-        self.sections = identifiers.compactMap { identifier in
-            guard let elements = groupedResults[identifier] else { return nil }
-            return Section(id: identifier, elements: elements)
+        if let currentID {
+            sections.append(Section(id: currentID, elements: currentResults))
         }
+        self.sections = sections
     }
-    
+
+    private init(sectionIdentifier: KeyPath<Result, SectionIdentifier>, sections: [Section]) {
+        self.sectionIdentifier = sectionIdentifier
+        self.sections = sections
+    }
+
     public func filter(_ isIncluded: (Result) throws -> Bool) rethrows -> Self {
-        let elements         = sections.flatMap { $0.elements }
-        let filteredElements = try elements.filter(isIncluded)
-        return .init(sectionIdentifier: sectionIdentifier, results: filteredElements)
+        let newSections = try sections.compactMap { section -> Section? in
+            let newResults = try section.elements.filter(isIncluded)
+            if newResults.isEmpty { return nil }
+            return Section(id: section.id, elements: newResults)
+        }
+        return .init(sectionIdentifier: sectionIdentifier, sections: newSections)
     }
 
     /// The collection of models that share a specified identifier.
-    ///
     public struct Section: RandomAccessCollection, Identifiable {
-
         /// A type that represents an element in the collection.
         public typealias Element     = Result
         /// A type that represents the ID of the collection.
@@ -94,11 +109,11 @@ where SectionIdentifier: Hashable, Result: PersistentModel {
         public typealias SubSequence = Slice<SectionedResults<SectionIdentifier, Result>.Section>
 
         /// The section identifier.
-        public var id: ID
+        public let id: ID
         /// The collection of results for the section.
-        public var elements: [Element]
+        public let elements: [Element]
         /// The index of the first element in the results collection.
-        public var startIndex: Int = 0
+        public var startIndex: Int { 0 }
         /// The index that’s one greater than that of the last element.
         public var endIndex: Int { elements.count }
 
