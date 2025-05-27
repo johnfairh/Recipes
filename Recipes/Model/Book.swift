@@ -8,7 +8,7 @@
 import SwiftData
 
 /// No changes but need a separate class otherwise SwiftData crashes CoreData.
-extension Version2Schema {
+extension Version3Schema {
     @Model
     class Book {
         /// Brief name for xref elsewhere

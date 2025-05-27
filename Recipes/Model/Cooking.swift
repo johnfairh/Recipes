@@ -8,7 +8,8 @@
 import SwiftData
 import Foundation
 
-extension Version2Schema {
+/// No changes but need a separate class otherwise SwiftData crashes CoreData.
+extension Version3Schema {
     @Model
     class Cooking {
         /// When did it happen

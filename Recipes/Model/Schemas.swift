@@ -44,9 +44,24 @@ enum Version2Schema: VersionedSchema {
     }
 }
 
+enum Version3Schema: VersionedSchema {
+    static var models: [any PersistentModel.Type] = [
+        Version3Schema.Recipe.self,
+        Version3Schema.Book.self,
+        Version3Schema.Cooking.self
+    ]
+
+    static var versionIdentifier = Schema.Version(0, 0, 3)
+
+    static func didMigrate(modelContext: ModelContext) throws {
+        Log.log("Schema Version Migration 2->3")
+    }
+}
+
+
 // MARK: Common
 
-typealias CurrentSchema = Version2Schema
+typealias CurrentSchema = Version3Schema
 
 typealias Recipe = CurrentSchema.Recipe
 typealias Book = CurrentSchema.Book
@@ -65,6 +80,13 @@ enum MigrationPlan: SchemaMigrationPlan {
         .custom(fromVersion: Version1Schema.self,
                 toVersion: Version2Schema.self,
                 willMigrate: nil,
-                didMigrate: Version2Schema.didMigrate)
+                didMigrate: Version2Schema.didMigrate),
+
+        /// Populate `Lifecyle` on introduction
+        .custom(fromVersion: Version2Schema.self,
+                toVersion: Version3Schema.self,
+                willMigrate: nil,
+                didMigrate: Version3Schema.didMigrate)
+
     ]
 }

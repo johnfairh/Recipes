@@ -122,7 +122,7 @@ where SectionIdentifier: Hashable, Result: PersistentModel {
             get { elements[position] }
         }
 
-        internal init(id: ID, elements: [Element]) {
+        init(id: ID, elements: [Element]) {
             self.id       = id
             self.elements = elements
         }

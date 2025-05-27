@@ -16,20 +16,14 @@ extension Recipe {
     }
 }
 
-extension Bool: @retroactive Comparable {
-    public static func <(lhs: Self, rhs: Self) -> Bool {
-        !lhs && rhs
-    }
-}
-
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
 
-    @SectionedQuery(\Recipe.flagged, sort: [
-        .init(\Recipe.flagged, order: .reverse),
-        .init(\Recipe.name, order: .forward)
+    @SectionedQuery(\Recipe.lifecycle, sort: [
+        .init(\.lifecycleRaw, order: .forward),
+        .init(\.name, order: .forward)
     ])
-    private var recipes: SectionedResults<Bool, Recipe>
+    private var recipes: SectionedResults<Recipe.Lifecycle, Recipe>
 
     @State private var selected: Recipe? = nil
 
@@ -37,7 +31,7 @@ struct RecipesView: View {
 
     @State private var searchText: String = ""
 
-    var filteredRecipes: SectionedResults<Bool, Recipe> {
+    var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
         if searchText.isEmpty {
             return recipes
         }
@@ -51,7 +45,7 @@ struct RecipesView: View {
                     ContentUnavailableView.search
                 } else {
                     ForEach(filteredRecipes) { section in
-                        Section(section.id ? "Flagged" : "Regular") {
+                        Section(section.id.name) {
                             ForEach(section) { recipe in
                                 HStack {
                                     Image(systemName: recipe.symbolName)
@@ -87,20 +81,33 @@ struct RecipesView: View {
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                    // Cooking
                                     Button("Cooked", systemImage: "fork.knife") {
                                         Log.log("Update cooked for recipe '\(recipe.name)'")
                                         recipe.updateLastCookedTime()
                                         let cooking = Cooking(recipe: recipe, notes: nil, timestamp: recipe.lastCookedTime)
+                                        // implicit unplan/unpin
+                                        recipe.lifecycle = .library
                                         modelContext.insert(cooking)
                                         modelContext.trySave()
                                     }
                                     .tint(.green)
-                                    Button(recipe.flagged ? "Unflag" : "Flag", systemImage: "flag") {
-                                        Log.log("Updated flagged for recipe '\(recipe.name)'")
-                                        recipe.flagged.toggle()
+
+                                    // Planning
+                                    Button(recipe.planActionName, systemImage: recipe.planActionIconName) {
+                                        Log.log("Updated recipe '\(recipe.name)' to \(recipe.lifecycle)")
+                                        recipe.lifecycle = recipe.planActionNextState
                                         modelContext.trySave()
                                     }
                                     .tint(.blue)
+
+                                    // Pinning
+                                    Button(recipe.pinActionName, systemImage: recipe.pinActionIconName) {
+                                        Log.log("Updated recipe '\(recipe.name)' to \(recipe.lifecycle)")
+                                        recipe.lifecycle = recipe.pinActionNextState
+                                        modelContext.trySave()
+                                    }
+                                    .tint(.yellow)
                                 }
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button("Delete", systemImage: "trash", role: .destructive) {

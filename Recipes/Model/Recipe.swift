@@ -8,10 +8,9 @@
 import SwiftData
 import Foundation
 
-/// Add ``cookings``
-/// Remove ``what`` (oops)
-/// Add ``flagged``
-extension Version2Schema {
+/// Remove ``flagged``
+/// Add ``lifecycle``
+extension Version3Schema {
     @Model
     class Recipe {
         /// Timestamp of this objects
@@ -45,8 +44,14 @@ extension Version2Schema {
         /// Cooking history
         @Relationship(deleteRule: .cascade, inverse: \Cooking.recipe) var cookings: [Cooking]
 
-        /// Flagged by user (default value here otherwise SwiftData craps out)
-        var flagged: Bool = false
+        enum Lifecycle: UInt8 {
+            case planned = 1
+            case pinned = 2
+            case library = 3
+        }
+
+        /// User importance - default value to satisfy SwiftData upgrade, can't be enum because SwiftData still can't sort by them
+        var lifecycleRaw: UInt8 = Lifecycle.library.rawValue
 
         init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, isImported: Bool, notes: String) {
             self.creationTime = Date.now
@@ -60,7 +65,7 @@ extension Version2Schema {
             self.lastCookedTime = isImported ? .importedRecipe : nil
             self.notes = notes
             self.cookings = []
-            self.flagged = false
+            self.lifecycle = .library
         }
     }
 }
@@ -158,14 +163,61 @@ extension Recipe {
         }
     }
 
-    var actualLastCookedTime: Date? {
-        switch lastCookedTime {
-        case .none, .importedRecipe: return nil
-        case .some(let date): return date
-        }
-    }
-
     func updateLastCookedTime() {
         lastCookedTime = .now
+    }
+}
+
+// MARK: Lifecycle
+
+extension Recipe {
+    var lifecycle: Lifecycle {
+        get {
+            Lifecycle(rawValue: lifecycleRaw) ?? .library
+        }
+        set {
+            lifecycleRaw = UInt8(newValue.rawValue)
+        }
+    }
+}
+
+extension Recipe.Lifecycle {
+    var name: String {
+        switch self {
+        case .planned: "Planned"
+        case .pinned: "Pinned"
+        case .library: "Library"
+        }
+    }
+}
+
+// Planning & Pinning UI
+extension Recipe {
+    private var canPlan: Bool { lifecycle != .planned }
+
+    var planActionName: String {
+        canPlan ? "Plan" : "Unplan"
+    }
+
+    var planActionIconName: String {
+        canPlan ? "calendar.badge.plus" : "calendar.badge.minus"
+    }
+
+    var planActionNextState: Lifecycle {
+        canPlan ? .planned : .library
+    }
+
+    private var canPin: Bool { lifecycle != .pinned }
+
+    var pinActionName: String {
+        canPin ? "Pin" : "Unpin"
+    }
+
+    var pinActionIconName: String {
+        canPin ? "pin.fill" : "pin.slash.fill"
+    }
+
+    var pinActionNextState: Lifecycle {
+        canPin ? .pinned : .library
     }
 }
