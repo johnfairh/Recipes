@@ -54,17 +54,8 @@ struct RecipesView: View {
                                         .frame(minWidth: 32, maxWidth: 32)
                                     VStack(alignment: .leading) {
                                         Text(recipe.name).font(.title3)
-                                        if let servings = recipe.servings {
-                                            Text(servings).font(.body)
-                                        }
-                                        if selected == recipe {
-                                            Text(recipe.location)
-                                            // url
-                                            // notes
-                                            // creation date
-                                            if let lastCookedText = recipe.lastCookedText {
-                                                Text(lastCookedText)
-                                            }
+                                        if let lastCookedText = recipe.lastCookedText {
+                                            Text(lastCookedText).font(.body)
                                         }
                                     }
                                     .padding(.leading, 8)
@@ -78,7 +69,7 @@ struct RecipesView: View {
                                         selected = recipe
                                     }
                                 }
-                                .listRowSeparator(.hidden)
+//                                .listRowSeparator(.hidden)
                                 .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     // Cooking
@@ -146,55 +137,16 @@ struct RecipesView: View {
         .sheet(isPresented: $isShowingCreate) {
             CreateRecipeView()
         }
+        .sheet(item: $selected) { itm in
+            RecipeView(recipe: itm)
+                .presentationDetents([.fraction(0.33), .medium, .large])
+                .presentationDragIndicator(.automatic)
+// This causes odd behaviour when flipping from one sheet to another
+//                .presentationBackgroundInteraction(.enabled)
+        }
     }
 }
 
 #Preview(traits: .previewObjects) {
     RecipesView()
 }
-
-/*
- var body: some View {
-     NavigationSplitView {
-         if !searchText.isEmpty && filteredRecipes.isEmpty {
-             ContentUnavailableView.search
-         } else {
-             List(filteredRecipes) { section in
-                 Section(section.id) {
-                     ForEach(section) { recipe in
-                         HStack {
-                             Image(systemName: recipe.symbolName)
-                                 .imageScale(.large)
-                                 .foregroundStyle(Color.accentColor)
-                                 .frame(minWidth: 32, maxWidth: 32)
-                             VStack(alignment: .leading) {
-                                 Text(recipe.name).font(.title3)
-                                 if let servings = recipe.servings {
-                                     Text(servings).font(.body)
-                                 }
-                                 Text("FLAGGED = \(recipe.flagged)")
-                                 if selected == recipe {
-                                     Text(recipe.location)
-                                     // url
-                                     // notes
-                                     // creation date
-                                     if let lastCookedText = recipe.lastCookedText {
-                                         Text(lastCookedText)
-                                     }
-                                 }
-                             }
-                             .padding(.leading, 8)
-                             Spacer()
-                         }
-                         .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
-                         .onTapGesture {
-                             if selected == recipe {
-                                 selected = nil
-                             } else {
-                                 selected = recipe
-                             }
-                         }
-                         .listRowSeparator(.hidden)
-                         .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
-
- */
