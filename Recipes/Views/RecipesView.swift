@@ -69,7 +69,6 @@ struct RecipesView: View {
                                         selected = recipe
                                     }
                                 }
-//                                .listRowSeparator(.hidden)
                                 .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     // Cooking
@@ -135,7 +134,7 @@ struct RecipesView: View {
             Text("Select an item")
         }
         .sheet(isPresented: $isShowingCreate) {
-            CreateRecipeView()
+            CreateEditRecipeView(parentModelContext: modelContext)
         }
         .sheet(item: $selected) { itm in
             RecipeView(recipe: itm)

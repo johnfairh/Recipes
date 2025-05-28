@@ -38,6 +38,8 @@ extension Version3Schema {
             self.recipes = []
             self.sortOrder = sortOrder
         }
+
+        static let dummy = Book(shortName: "", longName: "", symbolName: "", hasPageNumbers: false, sortOrder: 0)
     }
 }
 

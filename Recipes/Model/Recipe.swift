@@ -76,13 +76,24 @@ extension Version3Schema {
 extension Recipe {
     /// Text describing the recipe's location
     var location: String {
-        let pageText = pageNumber.map { ", p\($0)" } ?? ""
+        let pageText: String
+        if book.hasPageNumbers {
+            pageText = pageNumber.map { ", p\($0)" } ?? ""
+        } else {
+            pageText = ""
+        }
         return book.shortName.trimmingCharacters(in: .whitespaces) + pageText
     }
 
     /// Text describing servings
     var servings: String? {
-        quantity ?? servingsCount.map { "\($0) serving\($0 == 1 ? "" : "s")" }
+        let s: String?
+        if kind == .meal {
+            s = servingsCount.map { "\($0) serving\($0 == 1 ? "" : "s")" }
+        } else {
+            s = quantity
+        }
+        return s ?? "(no servings)"
     }
 
     /// Brief summary for list view
@@ -155,6 +166,10 @@ extension Date {
 }
 
 extension Recipe {
+    func makeImported() {
+        lastCookedTime = .importedRecipe
+    }
+
     var lastCookedText: String? {
         switch lastCookedTime {
         case .importedRecipe: return nil
@@ -176,7 +191,7 @@ extension Recipe {
             Lifecycle(rawValue: lifecycleRaw) ?? .library
         }
         set {
-            lifecycleRaw = UInt8(newValue.rawValue)
+            lifecycleRaw = newValue.rawValue
         }
     }
 }

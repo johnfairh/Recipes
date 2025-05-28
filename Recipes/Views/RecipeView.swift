@@ -55,7 +55,7 @@ struct RecipeView: View {
         }
         .padding()
         .sheet(isPresented: $isShowingEdit) {
-            EditRecipeView(recipe: recipe, modelContainer: modelContext.container)
+            CreateEditRecipeView(parentModelContext: modelContext, recipe: recipe)
         }
         Spacer()
     }

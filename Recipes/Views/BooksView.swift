@@ -18,6 +18,8 @@ struct BooksView: View {
 
     @State private var isShowingCreate: Bool = false
 
+    @State private var selected: Book? = nil
+
     var body: some View {
         NavigationSplitView {
             List {
@@ -36,6 +38,14 @@ struct BooksView: View {
                         Text("\(book.recipes.count.description) \(book.sortOrder)")
                     }
                     .deleteDisabled(book.recipes.count > 0)
+                    .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
+                    .onTapGesture {
+                        if selected == book {
+                            selected = nil
+                        } else {
+                            selected = book
+                        }
+                    }
                 }
                 .onDelete(perform: deleteItems)
             }
@@ -69,7 +79,10 @@ struct BooksView: View {
             LogView()
         }
         .sheet(isPresented: $isShowingCreate) {
-            CreateBookView()
+            CreateEditBookView(parentModelContext: modelContext)
+        }
+        .sheet(item: $selected) { itm in
+            CreateEditBookView(parentModelContext: modelContext, book: itm)
         }
     }
 
