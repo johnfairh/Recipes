@@ -29,7 +29,7 @@ struct CreateEditBookView: View {
             self.book = modelContext.model(for: book.id) as! Book
             isCreate = false
         } else {
-            self.book = Book(shortName: "", longName: "", symbolName: "", hasPageNumbers: false,
+            self.book = Book(shortName: "", longName: "", symbolName: Book.defaultSymbolName, hasPageNumbers: false,
                              sortOrder: Book.nextSortOrder(modelContext: modelContext))
             isCreate = true
         }
@@ -45,8 +45,9 @@ struct CreateEditBookView: View {
                 }
                 Section("Icon") {
                     Picker("Icon", selection: $book.symbolName) {
-                        Image(systemName: "brain.head.profile").tag("brain.head.profile")
-                        Image(systemName: "book.closed").tag("book.closed")
+                        ForEach(Book.symbolNames, id: \.self) { symbolName in
+                            Image(systemName: symbolName).tag(symbolName)
+                        }
                     }
                 }
                 Section("Details") {
