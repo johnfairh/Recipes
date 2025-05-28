@@ -35,7 +35,7 @@ struct BooksView: View {
                         }
                         .padding(.leading, 8)
                         Spacer()
-                        Text("\(book.recipes.count.description) \(book.sortOrder)")
+                        Text(book.recipes.count.description)
                     }
                     .deleteDisabled(book.recipes.count > 0)
                     .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
@@ -48,6 +48,7 @@ struct BooksView: View {
                     }
                 }
                 .onDelete(perform: deleteItems)
+                .onMove(perform: moveItems)
             }
             .navigationTitle("Books")
 #if os(macOS)
@@ -116,6 +117,18 @@ struct BooksView: View {
                 modelContext.delete(book)
             }
         }
+    }
+
+    // Yikes: rewrite the sort order for all the objects.
+    // Apparently this is how TMLPresentation works as well - I was sure there
+    // was some clever 'exchange order' thing but no, is not possible (floating point?)
+    // and, well, this seems OK.  Especially here when #books is small.
+    private func moveItems(from source: IndexSet, to destination: Int) {
+        var items = books
+        items.move(fromOffsets: source, toOffset: destination)
+        let indices = items.map(\.sortOrder).sorted()
+        zip(items, indices).forEach { $0.sortOrder = $1 }
+        modelContext.trySave()
     }
 }
 
