@@ -156,6 +156,10 @@ struct RecipesWidgetEntryView : View {
 struct RecipeLineView: View {
     let recipe: PlannedRecipes.PlannedRecipe
 
+    var lessBright: Color = {
+        Color(red: 0.9, green: 0.9, blue: 0.9)
+    }()
+
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading) {
@@ -172,10 +176,10 @@ struct RecipeLineView: View {
             }
             Spacer()
             Button(action: {}, label: {
-                Image(systemName: "fork.knife")
+                Image(systemName: "fork.knife").foregroundColor(lessBright)
             })
             Button(action: {}, label: {
-                Image(systemName: "calendar.badge.minus")
+                Image(systemName: "calendar.badge.minus").foregroundColor(lessBright)
             })
         }.padding(4)
     }
@@ -188,7 +192,7 @@ struct RecipesWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: PlannedRecipesProvider()) { entry in
             RecipesWidgetEntryView(recipes: entry)
-                .containerBackground(Color("WidgetBackground").gradient, for: .widget)
+                .containerBackground(.linearGradient(Color("WidgetBackground").gradient, startPoint: .bottom, endPoint: .top), for: .widget)
                 .tint(Color("AccentColor"))
         }
         .configurationDisplayName("Recipes Widget")
