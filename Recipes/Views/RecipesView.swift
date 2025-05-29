@@ -80,6 +80,7 @@ struct RecipesView: View {
                                         recipe.lifecycle = .library
                                         modelContext.insert(cooking)
                                         modelContext.trySave()
+                                        modelContext.notifyWidgets()
                                     }
                                     .tint(.green)
 
@@ -88,6 +89,7 @@ struct RecipesView: View {
                                         Log.log("Updated recipe '\(recipe.name)' to \(recipe.lifecycle)")
                                         recipe.lifecycle = recipe.planActionNextState
                                         modelContext.trySave()
+                                        modelContext.notifyWidgets()
                                     }
                                     .tint(.blue)
 
@@ -96,6 +98,7 @@ struct RecipesView: View {
                                         Log.log("Updated recipe '\(recipe.name)' to \(recipe.lifecycle)")
                                         recipe.lifecycle = recipe.pinActionNextState
                                         modelContext.trySave()
+                                        modelContext.notifyWidgets()
                                     }
                                     .tint(.yellow)
                                 }
@@ -104,6 +107,7 @@ struct RecipesView: View {
                                         Log.log("Delete recipe '\(recipe.name)'")
                                         modelContext.delete(recipe)
                                         modelContext.trySave()
+                                        modelContext.notifyWidgets()
                                     }
                                 }
                             }

@@ -5,7 +5,6 @@
 //  Created by John on 12/02/2025.
 //
 
-
 import SwiftUI
 import SwiftData
 
@@ -117,6 +116,7 @@ struct BooksView: View {
                 modelContext.delete(book)
             }
         }
+        modelContext.trySave()
     }
 
     // Yikes: rewrite the sort order for all the objects.

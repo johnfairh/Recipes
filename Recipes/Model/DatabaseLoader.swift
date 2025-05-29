@@ -14,12 +14,10 @@ enum DatabaseLoader {
 
     static let importExport = AppGroupImportExport(appGroup: appGroupName, filePrefix: storeName)
 
-    @MainActor
-    static var modelContainer: ModelContainer = {
+    /// Model container init - shared by extensions and app
+//    @MainActor
+    static var minimalModelContainer: ModelContainer = {
         do {
-            importExport.checkForReset()
-            importExport.checkForImport()
-
             let modelConfiguration = ModelConfiguration(storeName, groupContainer: .identifier(appGroupName))
 
             let modelContainer = try ModelContainer(
@@ -28,9 +26,6 @@ enum DatabaseLoader {
                 configurations: modelConfiguration
             )
             Log.log("Using database \(modelContainer.configurations.first!.url.path)")
-
-            modelContainer.mainContext.undoManager = UndoManager()
-
             return modelContainer
         } catch {
             Log.log("Model init failed, falling back to in-memory: \(error)") // XXX logging
@@ -40,6 +35,19 @@ enum DatabaseLoader {
                 configurations: memoryConfiguration
             )
         }
+    }()
+
+    /// Model container init - for app, understands reset + import
+    @MainActor
+    static var modelContainer: ModelContainer = {
+        importExport.checkForReset()
+        importExport.checkForImport()
+
+        let modelContainer = minimalModelContainer
+
+        modelContainer.mainContext.undoManager = UndoManager()
+
+        return modelContainer
     }()
 
     static func createObjects(modelContext: ModelContext) {

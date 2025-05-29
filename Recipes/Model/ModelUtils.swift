@@ -47,6 +47,14 @@ extension ModelContext {
     }
 }
 
+import WidgetKit
+
+extension ModelContext {
+    func notifyWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+}
+
 import Foundation
 
 func IsPreview() -> Bool {
