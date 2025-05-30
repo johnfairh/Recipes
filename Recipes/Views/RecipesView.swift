@@ -73,14 +73,9 @@ struct RecipesView: View {
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     // Cooking
                                     Button("Cooked", systemImage: "fork.knife") {
-                                        Log.log("Update cooked for recipe '\(recipe.name)'")
-                                        recipe.updateLastCookedTime()
-                                        let cooking = Cooking(recipe: recipe, notes: nil, timestamp: recipe.lastCookedTime)
-                                        // implicit unplan/unpin
-                                        recipe.lifecycle = .library
-                                        modelContext.insert(cooking)
-                                        modelContext.trySave()
-                                        modelContext.notifyWidgets()
+                                        modelContext.updateModel(recipe) {
+                                            recipe.cook(modelContext: modelContext)
+                                        }
                                     }
                                     .tint(.green)
 

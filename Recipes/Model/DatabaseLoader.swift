@@ -15,7 +15,6 @@ enum DatabaseLoader {
     static let importExport = AppGroupImportExport(appGroup: appGroupName, filePrefix: storeName)
 
     /// Model container init - shared by extensions and app
-//    @MainActor
     static var minimalModelContainer: ModelContainer = {
         do {
             let modelConfiguration = ModelConfiguration(storeName, groupContainer: .identifier(appGroupName))
@@ -36,6 +35,11 @@ enum DatabaseLoader {
             )
         }
     }()
+
+    @MainActor
+    static var intentsModelContext: ModelContext {
+        minimalModelContainer.mainContext
+    }
 
     /// Model container init - for app, understands reset + import
     @MainActor

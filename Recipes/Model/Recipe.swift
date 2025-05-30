@@ -70,6 +70,8 @@ extension Version3Schema {
     }
 }
 
+extension Recipe: JModelObject {}
+
 // MARK: Utilities
 
 /// Presentation
@@ -94,15 +96,6 @@ extension Recipe {
             s = quantity
         }
         return s ?? "(no servings)"
-    }
-
-    /// Brief summary for list view
-    var summary: String {
-        var summary = location
-        if let servings {
-            summary += ", \(servings)"
-        }
-        return summary
     }
 
     /// System image name
@@ -234,5 +227,18 @@ extension Recipe {
 
     var pinActionNextState: Lifecycle {
         canPin ? .pinned : .library
+    }
+}
+
+// MARK: Actions - from UI & intents
+
+extension Recipe {
+    func cook(modelContext: ModelContext) {
+        Log.log("Update cooked for recipe '\(name)'")
+        updateLastCookedTime()
+        let cooking = Cooking(recipe: self, notes: nil, timestamp: lastCookedTime)
+        modelContext.insert(cooking)
+        // implicit unplan/unpin
+        lifecycle = .library
     }
 }

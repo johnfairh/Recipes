@@ -9,35 +9,22 @@ import WidgetKit
 import SwiftUI
 import SwiftData
 
+extension RecipeEntity {
+    init(name: String, location: String, fakeUuid: String) {
+        self.id = fakeUuid
+        self.name = name
+        self.location = location
+    }
+}
+
 /// Plain data model of the info to display in the widget
 ///
 /// For us this is the entire list of 'planned' recipes, sorted by name
 struct PlannedRecipes: TimelineEntry {
     let date: Date
+    let recipes: [RecipeEntity]
 
-    final class PlannedRecipe: Identifiable {
-        let name: String
-        let source: String
-        let swiftDataId: PersistentIdentifier? // nil for fake data
-        let id: UUID
-
-        init(name: String, source: String) {
-            self.name = name
-            self.source = source
-            self.swiftDataId = nil
-            self.id = UUID()
-        }
-
-        init(_ recipe: Recipe) {
-            self.name = recipe.name
-            self.source = recipe.location
-            self.swiftDataId = recipe.id
-            self.id = UUID()
-        }
-    }
-    let recipes: [PlannedRecipe]
-
-    init(recipes: [PlannedRecipe]) {
+    init(recipes: [RecipeEntity]) {
         self.date = .now
         self.recipes = recipes
     }
@@ -45,10 +32,9 @@ struct PlannedRecipes: TimelineEntry {
     /// Dummy data used in "the widget gallery"
     static var placeholder: PlannedRecipes {
         let recipes = [
-            PlannedRecipe(name: "Chilli con Carne", source: "Purple book, page 94"),
-            PlannedRecipe(name: "Best Chocolate Brownies", source: "Smitten Kitchen #1, page 108"),
-            PlannedRecipe(name: "Worst Chocolate Brownies", source: "Smitten Kitchen #1, page 109")
-
+            RecipeEntity(name: "Chilli con Carne", location: "Purple book, page 94", fakeUuid: "0"),
+            RecipeEntity(name: "Best Chocolate Brownies", location: "Smitten Kitchen #1, page 108", fakeUuid: "1"),
+            RecipeEntity(name: "Worst Chocolate Brownies", location: "Smitten Kitchen #1, page 109", fakeUuid: "2")
         ]
         return PlannedRecipes(recipes: recipes)
     }
@@ -65,7 +51,7 @@ struct PlannedRecipes: TimelineEntry {
         fetchDescriptor.predicate = #Predicate { $0.lifecycleRaw == plannedRawValue }
 
         if let recipeModels = try? modelContext.fetch(fetchDescriptor) {
-            self.init(recipes: recipeModels.map(PlannedRecipe.init))
+            self.init(recipes: recipeModels.map(RecipeEntity.init))
         } else {
             self = .placeholder
         }
@@ -114,11 +100,11 @@ struct RecipesWidgetEntryView : View {
         min(maxRows, recipes.recipes.count)
     }
 
-    var displayRecipes: [PlannedRecipes.PlannedRecipe] {
+    var displayRecipes: [RecipeEntity] {
         Array(recipes.recipes[0..<displayCount])
     }
 
-    var lastId: UUID {
+    var lastId: String {
         recipes.recipes[displayCount - 1].id
     }
 
@@ -154,7 +140,7 @@ struct RecipesWidgetEntryView : View {
 }
 
 struct RecipeLineView: View {
-    let recipe: PlannedRecipes.PlannedRecipe
+    let recipe: RecipeEntity
 
     var lessBright: Color = {
         Color(red: 0.9, green: 0.9, blue: 0.9)
@@ -168,19 +154,21 @@ struct RecipeLineView: View {
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .fixedSize(horizontal: false, vertical: true)
-                Text(recipe.source)
+                Text(recipe.location)
                     .font(.subheadline)
                     .fontWeight(.light)
                     .foregroundColor(.white)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
-            Button(action: {}, label: {
-                Image(systemName: "fork.knife").foregroundColor(lessBright)
-            })
-            Button(action: {}, label: {
-                Image(systemName: "calendar.badge.minus").foregroundColor(lessBright)
-            })
+            if recipe.id == recipe.name { // fake UUID placeholder
+                Button(intent: RecipeCookIntent(recipe: recipe), label: {
+                    Image(systemName: "fork.knife").foregroundColor(lessBright)
+                })
+                Button(action: {}, label: {
+                    Image(systemName: "calendar.badge.minus").foregroundColor(lessBright)
+                })
+            }
         }.padding(4)
     }
 }

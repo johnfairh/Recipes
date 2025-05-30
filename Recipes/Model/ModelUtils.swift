@@ -7,6 +7,8 @@
 
 import SwiftData
 
+// MARK: ModelObject - SortOrder support
+
 protocol WithSortOrder {
     var sortOrder: UInt { get }
 }
@@ -37,6 +39,37 @@ extension WithSortOrder where Self: PersistentModel {
     }
 }
 
+// MARK: ModelObject - fetchability
+
+protocol JModelObject: PersistentModel {
+    var name: String { get }
+}
+
+extension JModelObject {
+    static func find(name: String, modelContext: ModelContext) throws -> Self? {
+        var fetchDescriptor = FetchDescriptor<Self>(
+            predicate: #Predicate { $0.name == name }
+        )
+        fetchDescriptor.fetchLimit = 1
+        return try modelContext.fetch(fetchDescriptor).first
+    }
+
+    static func find(names: [String], modelContext: ModelContext) throws -> [Self] {
+        let fetchDescriptor = FetchDescriptor<Self>(
+            predicate: #Predicate { names.contains($0.name) } /* XXX sortorder */
+        )
+        return try modelContext.fetch(fetchDescriptor)
+    }
+
+    static func all(modelContext: ModelContext) throws -> [Self] {
+        let fd = FetchDescriptor<Self>() /* XXX sortorder (sortBy: [.init(\.sortOrder)]) */
+        return try modelContext.fetch(fd)
+    }
+}
+
+
+// MARK: ModelContext helpers
+
 extension ModelContext {
     func trySave() {
         do {
@@ -44,6 +77,12 @@ extension ModelContext {
         } catch {
             Log.log("Couldn't save model context: \(error)")
         }
+    }
+}
+
+extension ModelContext {
+    func undo() {
+        undoManager?.undo()
     }
 }
 
@@ -55,6 +94,33 @@ extension ModelContext {
     }
 }
 
+import AppIntents
+
+extension ModelContext {
+    /// Take an Entity, find the corresponding modelobject, do a thing, then save the DB and notify everyone who might care
+    @discardableResult
+    func updateModel<ModelType, EntityType, R>(forEntity entity: EntityType, as modelType: ModelType.Type, modify: (ModelContext, ModelType) async throws -> R) async throws -> R where ModelType: JModelObject, EntityType: AppEntity, EntityType.ID == String {
+        guard let m = try ModelType.find(name: entity.id, modelContext: self) else {
+            throw AppIntentError.Unrecoverable.entityNotFound
+        }
+        let result = try await modify(self, m)
+        trySave()
+        notifyWidgets()
+        return result
+    }
+
+    /// Do an action on the model with propagation
+    @discardableResult
+    func updateModel<ModelType, R>(_ model: ModelType, modify: () throws -> R) rethrows -> R where ModelType: JModelObject {
+        let result = try modify()
+        trySave()
+        notifyWidgets()
+        return result
+    }
+}
+
+// MARK: Misc Stuff To Be Moved
+
 import Foundation
 
 func IsPreview() -> Bool {
@@ -64,11 +130,5 @@ func IsPreview() -> Bool {
 extension String {
     var emptyNil: String? {
         isEmpty ? nil : self
-    }
-}
-
-extension ModelContext {
-    func undo() {
-        undoManager?.undo()
     }
 }
