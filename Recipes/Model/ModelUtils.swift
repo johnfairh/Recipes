@@ -46,6 +46,7 @@ protocol JModelObject: PersistentModel {
 }
 
 extension JModelObject {
+    /// Find an object by name in the DB.  Nil if not found; throws on DB error.
     static func find(name: String, modelContext: ModelContext) throws -> Self? {
         var fetchDescriptor = FetchDescriptor<Self>(
             predicate: #Predicate { $0.name == name }
@@ -54,6 +55,7 @@ extension JModelObject {
         return try modelContext.fetch(fetchDescriptor).first
     }
 
+    /// FInd a set of models - order undefined?
     static func find(names: [String], modelContext: ModelContext) throws -> [Self] {
         let fetchDescriptor = FetchDescriptor<Self>(
             predicate: #Predicate { names.contains($0.name) } /* XXX sortorder */
@@ -61,9 +63,18 @@ extension JModelObject {
         return try modelContext.fetch(fetchDescriptor)
     }
 
+    /// Find all models
     static func all(modelContext: ModelContext) throws -> [Self] {
         let fd = FetchDescriptor<Self>() /* XXX sortorder (sortBy: [.init(\.sortOrder)]) */
         return try modelContext.fetch(fd)
+    }
+
+    /// Find an object from its entity.  Throws on DB error and notfound.
+    static func find<EntityType>(entity: EntityType, modelContext: ModelContext) throws -> Self where EntityType: AppEntity, EntityType.ID == String {
+        if let model = try find(name: entity.id, modelContext: modelContext) {
+            return model
+        }
+        throw AppIntentError.Unrecoverable.entityNotFound
     }
 }
 
@@ -97,22 +108,10 @@ extension ModelContext {
 import AppIntents
 
 extension ModelContext {
-    /// Take an Entity, find the corresponding modelobject, do a thing, then save the DB and notify everyone who might care
-    @discardableResult
-    func updateModel<ModelType, EntityType, R>(forEntity entity: EntityType, as modelType: ModelType.Type, modify: (ModelContext, ModelType) async throws -> R) async throws -> R where ModelType: JModelObject, EntityType: AppEntity, EntityType.ID == String {
-        guard let m = try ModelType.find(name: entity.id, modelContext: self) else {
-            throw AppIntentError.Unrecoverable.entityNotFound
-        }
-        let result = try await modify(self, m)
-        trySave()
-        notifyWidgets()
-        return result
-    }
-
     /// Do an action on the model with propagation
     @discardableResult
-    func updateModel<ModelType, R>(_ model: ModelType, modify: () throws -> R) rethrows -> R where ModelType: JModelObject {
-        let result = try modify()
+    func updateModel<R>(_ modify: (ModelContext) throws -> R) rethrows -> R {
+        let result = try modify(self)
         trySave()
         notifyWidgets()
         return result

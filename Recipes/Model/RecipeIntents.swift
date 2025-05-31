@@ -67,10 +67,9 @@ struct RecipeCookIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        try await DatabaseLoader.intentsModelContext.updateModel(forEntity: recipe, as: Recipe.self) { modelContext, recipe in
-            recipe.cook(modelContext: modelContext)
-        }
-
+        let modelContext = DatabaseLoader.intentsModelContext
+        let recipeModel = try Recipe.find(entity: recipe, modelContext: modelContext)
+        recipeModel.doCookAction(modelContext: modelContext)
         return .result()
     }
 }

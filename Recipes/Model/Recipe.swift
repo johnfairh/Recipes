@@ -233,12 +233,30 @@ extension Recipe {
 // MARK: Actions - from UI & intents
 
 extension Recipe {
-    func cook(modelContext: ModelContext) {
+    func doCookAction(modelContext: ModelContext) {
         Log.log("Update cooked for recipe '\(name)'")
-        updateLastCookedTime()
-        let cooking = Cooking(recipe: self, notes: nil, timestamp: lastCookedTime)
-        modelContext.insert(cooking)
-        // implicit unplan/unpin
-        lifecycle = .library
+        modelContext.updateModel { _ in
+            updateLastCookedTime()
+            let cooking = Cooking(recipe: self, notes: nil, timestamp: lastCookedTime)
+            modelContext.insert(cooking)
+            // implicit unplan/unpin
+            lifecycle = .library
+        }
+    }
+
+    func doPlanAction(modelContext: ModelContext) {
+        let next = planActionNextState
+        Log.log("Updated recipe '\(name)' to \(next)")
+        modelContext.updateModel { _ in
+            lifecycle = next
+        }
+    }
+
+    func doPinAction(modelContext: ModelContext) {
+        let next = pinActionNextState
+        Log.log("Updated recipe '\(name)' to \(next)")
+        modelContext.updateModel { _ in
+            lifecycle = next
+        }
     }
 }

@@ -73,36 +73,28 @@ struct RecipesView: View {
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     // Cooking
                                     Button("Cooked", systemImage: "fork.knife") {
-                                        modelContext.updateModel(recipe) {
-                                            recipe.cook(modelContext: modelContext)
-                                        }
+                                        recipe.doCookAction(modelContext: modelContext)
                                     }
                                     .tint(.green)
 
                                     // Planning
                                     Button(recipe.planActionName, systemImage: recipe.planActionIconName) {
-                                        Log.log("Updated recipe '\(recipe.name)' to \(recipe.lifecycle)")
-                                        recipe.lifecycle = recipe.planActionNextState
-                                        modelContext.trySave()
-                                        modelContext.notifyWidgets()
+                                        recipe.doPlanAction(modelContext: modelContext)
                                     }
                                     .tint(.blue)
 
                                     // Pinning
                                     Button(recipe.pinActionName, systemImage: recipe.pinActionIconName) {
-                                        Log.log("Updated recipe '\(recipe.name)' to \(recipe.lifecycle)")
-                                        recipe.lifecycle = recipe.pinActionNextState
-                                        modelContext.trySave()
-                                        modelContext.notifyWidgets()
+                                        recipe.doPinAction(modelContext: modelContext)
                                     }
                                     .tint(.yellow)
                                 }
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button("Delete", systemImage: "trash", role: .destructive) {
                                         Log.log("Delete recipe '\(recipe.name)'")
-                                        modelContext.delete(recipe)
-                                        modelContext.trySave()
-                                        modelContext.notifyWidgets()
+                                        modelContext.updateModel { _ in
+                                            modelContext.delete(recipe)
+                                        }
                                     }
                                 }
                             }
