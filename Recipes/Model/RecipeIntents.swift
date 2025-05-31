@@ -80,6 +80,35 @@ extension RecipeCookIntent {
     }
 }
 
+// MARK: AppIntent - Recipe Plan(/Unplan) Intent
+
+struct RecipePlanIntent: AppIntent {
+    static let title: LocalizedStringResource = "Plan Recipe"
+
+    static let description = IntentDescription("Plan a recipe for cooking.")
+
+    @Parameter(title: "Recipe", description: "The recipe to plan")
+    var recipe: RecipeEntity
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Plan \(\.$recipe)")
+    }
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        let modelContext = DatabaseLoader.intentsModelContext
+        let recipeModel = try Recipe.find(entity: recipe, modelContext: modelContext)
+        recipeModel.doPlanAction(modelContext: modelContext)
+        return .result()
+    }
+}
+
+extension RecipePlanIntent {
+    init(recipe: RecipeEntity) {
+        self.recipe = recipe
+    }
+}
+
 // MARK: Shortcuts - for science...
 
 class AppShortcuts: AppShortcutsProvider {
@@ -91,6 +120,14 @@ class AppShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Cook a recipe",
             systemImageName: "fork.knife"
+        )
+        AppShortcut(
+            intent: RecipePlanIntent(),
+            phrases: [
+                "Plan in \(.applicationName)"
+            ],
+            shortTitle: "Plan a recipe",
+            systemImageName: "calendar.badge.minus"
         )
     }
 }

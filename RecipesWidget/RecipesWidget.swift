@@ -165,7 +165,7 @@ struct RecipeLineView: View {
                 Button(intent: RecipeCookIntent(recipe: recipe), label: {
                     Image(systemName: "fork.knife").foregroundColor(lessBright)
                 })
-                Button(action: {}, label: {
+                Button(intent: RecipePlanIntent(recipe: recipe), label: {
                     Image(systemName: "calendar.badge.minus").foregroundColor(lessBright)
                 })
             }
