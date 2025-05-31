@@ -20,14 +20,33 @@ struct RecipesApp: App {
 }
 
 struct AppTabView: View {
+    @Environment(\.modelContext) var modelContext
+
+    @State var selectedTab = ""
+    @State var invokedRecipe: Recipe?
+
     var body: some View {
-        TabView {
-            Tab("Recipes", systemImage: "fork.knife.circle") {
-                RecipesView()
+        TabView(selection: $selectedTab) {
+            Tab("Recipes", systemImage: "fork.knife.circle", value: "Recipes") {
+                RecipesView(invokedRecipe: $invokedRecipe)
             }
-            Tab("Books", systemImage: "books.vertical.circle") {
+            Tab("Books", systemImage: "books.vertical.circle", value: "Books") {
                 BooksView()
             }
+        }
+        .onOpenURL { url in
+            Log.log("URL: \(url)")
+            let path = url.path(percentEncoded: false)
+            Log.log("URL-path: \(path)")
+            guard path.count > 1,
+                  let recipe = try? Recipe.find(name: String(path.dropFirst()), modelContext: modelContext) else {
+                Log.log("URl-!found-recipe")
+                return
+            }
+
+            Log.log("URL-found-recipe: \(recipe.name)")
+            selectedTab = "Recipes"
+            invokedRecipe = recipe
         }
     }
 }

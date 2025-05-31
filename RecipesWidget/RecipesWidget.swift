@@ -146,19 +146,29 @@ struct RecipeLineView: View {
         Color(red: 0.9, green: 0.9, blue: 0.9)
     }()
 
+    var recipeURL: URL {
+        if let encodedName = recipe.name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
+           let url = URL(string: "widget:///\(encodedName)") {
+            return url
+        }
+        return URL(string: "widget:///")!
+    }
+
     var body: some View {
         HStack(alignment: .center) {
-            VStack(alignment: .leading) {
-                Text(recipe.name)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.white)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(recipe.location)
-                    .font(.subheadline)
-                    .fontWeight(.light)
-                    .foregroundColor(.white)
-                    .fixedSize(horizontal: false, vertical: true)
+            Link(destination: recipeURL) {
+                VStack(alignment: .leading) {
+                    Text(recipe.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(recipe.location)
+                        .font(.subheadline)
+                        .fontWeight(.light)
+                        .foregroundColor(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             Spacer()
             if recipe.id == recipe.name { // fake UUID placeholder

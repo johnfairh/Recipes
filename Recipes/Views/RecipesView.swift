@@ -31,6 +31,12 @@ struct RecipesView: View {
 
     @State private var searchText: String = ""
 
+    @Binding private var invokedRecipe: Recipe?
+
+    init(invokedRecipe: Binding<Recipe?>) {
+        self._invokedRecipe = invokedRecipe
+    }
+
     var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
         if searchText.isEmpty {
             return recipes
@@ -134,9 +140,15 @@ struct RecipesView: View {
 // This causes odd behaviour when flipping from one sheet to another
 //                .presentationBackgroundInteraction(.enabled)
         }
+        .onChange(of: invokedRecipe) {
+            if selected == nil && invokedRecipe != nil {
+                selected = invokedRecipe
+            }
+            invokedRecipe = nil
+        }
     }
 }
 
-#Preview(traits: .previewObjects) {
-    RecipesView()
-}
+//#Preview(traits: .previewObjects) {
+//    RecipesView()
+//}
