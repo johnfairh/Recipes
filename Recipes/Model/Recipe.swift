@@ -74,9 +74,11 @@ extension Recipe: JModelObject {}
 
 // MARK: Utilities
 
+import SwiftUI
+
 /// Presentation
 extension Recipe {
-    /// Text describing the recipe's location
+    /// Brief text describing the recipe's location
     var location: String {
         let pageText: String
         if book.hasPageNumbers {
@@ -87,15 +89,15 @@ extension Recipe {
         return book.shortName.trimmingCharacters(in: .whitespaces) + pageText
     }
 
-    /// Text describing servings
-    var servings: String? {
+    /// Long sentence describing servings quantity eg. "Makes 3 servings".
+    var servings: String {
         let s: String?
         if kind == .meal {
             s = servingsCount.map { "\($0) serving\($0 == 1 ? "" : "s")" }
         } else {
-            s = quantity
+            s = quantity?.localizedLowercase
         }
-        return s ?? "(no servings)"
+        return s.map { "Makes \($0)." } ?? "(no servings info)"
     }
 
     /// System image name
@@ -163,6 +165,7 @@ extension Recipe {
         lastCookedTime = .importedRecipe
     }
 
+    /// Short label of approximate last-cooked eg "Made last week"
     var lastCookedText: String? {
         switch lastCookedTime {
         case .importedRecipe: return nil
@@ -171,8 +174,29 @@ extension Recipe {
         }
     }
 
+    /// Long sentence of approximate last-cooked eg. "Most recently made last week."
+    var lastCookedTextLong: String {
+        switch lastCookedTime {
+        case .importedRecipe: return "Not sure when last made."
+        case .none: return "Not made yet."
+        case .some(let date): return "Most recently made \(date.whenWasThis)."
+        }
+    }
+
     func updateLastCookedTime() {
         lastCookedTime = .now
+    }
+}
+
+// MARK: Cookings
+
+extension Recipe {
+    /// Long sentence of approx first-cooked eg. "First made on 3 September 2012"
+    var firstCookedTextLong: String? {
+        guard let cooking = cookings.sorted(by: { $0.timestamp < $1.timestamp }).first else {
+            return nil
+        }
+        return "First made on \(cooking.timestamp.formatted(date: .complete, time: .omitted))."
     }
 }
 
@@ -199,7 +223,7 @@ extension Recipe.Lifecycle {
     }
 }
 
-// Planning & Pinning UI
+// Planning / Pinning / Cooking UI
 extension Recipe {
     private var canPlan: Bool { lifecycle != .planned }
 
@@ -227,6 +251,14 @@ extension Recipe {
 
     var pinActionNextState: Lifecycle {
         canPin ? .pinned : .library
+    }
+
+    var cookActionName: String {
+        "Cook"
+    }
+
+    var cookActionIconName: String {
+        "fork.knife"
     }
 }
 
@@ -257,6 +289,13 @@ extension Recipe {
         Log.log("Updated recipe '\(name)' to \(next)")
         modelContext.updateModel { _ in
             lifecycle = next
+        }
+    }
+
+    func doDeleteAction(modelContext: ModelContext) {
+        Log.log("Delete recipe '\(name)'")
+        modelContext.updateModel { _ in
+            modelContext.delete(self)
         }
     }
 }

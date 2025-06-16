@@ -190,7 +190,7 @@ struct RecipesWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: PlannedRecipesProvider()) { entry in
             RecipesWidgetEntryView(recipes: entry)
-                .containerBackground(.linearGradient(Color("WidgetBackground").gradient, startPoint: .bottom, endPoint: .top), for: .widget)
+                .containerBackground(.linearGradient(Color("WidgetBackground").gradient, startPoint: .top, endPoint: .bottom), for: .widget)
                 .tint(Color("AccentColor"))
         }
         .configurationDisplayName("Recipes Widget")

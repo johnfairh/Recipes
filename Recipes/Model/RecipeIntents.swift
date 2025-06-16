@@ -111,7 +111,7 @@ extension RecipePlanIntent {
 
 // MARK: Shortcuts - for science...
 
-class AppShortcuts: AppShortcutsProvider {
+final class AppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: RecipeCookIntent(),

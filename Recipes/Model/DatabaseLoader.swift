@@ -66,15 +66,19 @@ enum DatabaseLoader {
         let cake = Recipe(name: "Chocolate Cake", book: purple, pageNumber: 100, url: nil, kind: .sweet, servingsCount: nil, quantity: "8x8 inch tray", isImported: false, notes: "")
         cake.lastCookedTime = Date.now
 
-        let nuts = Recipe(name: "Bar nuts", book: purple, pageNumber: 125, url: nil, kind: .other, servingsCount: nil, quantity: "A handful", isImported: true, notes: "")
+        let nuts = Recipe(name: "Bar nuts", book: purple, pageNumber: 125, url: "https://bbc.co.uk/", kind: .other, servingsCount: nil, quantity: "A handful", isImported: true, notes: "Here are some notes about bar nuts.  I made this for a Dorking Christmas trip once, and they came out well - all eaten, decent comments.")
         nuts.lastCookedTime = .now.addingTimeInterval(-(60 * 60 * 24 * 7))
+
+        let nutsCooking = Cooking(recipe: nuts, notes: nil, timestamp: nuts.lastCookedTime!.addingTimeInterval(-(60*60*24*7)))
 
         modelContext.insert(brain)
         modelContext.insert(purple)
+
         modelContext.insert(pasta)
         modelContext.insert(soup)
         modelContext.insert(risotto)
         modelContext.insert(cake)
+        modelContext.insert(nutsCooking)
         modelContext.insert(nuts)
 
         do {

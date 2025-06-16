@@ -5,7 +5,7 @@
 //  Created by John on 12/02/2025.
 //
 
-
+import UIKit
 import SwiftUI
 import SwiftData
 
@@ -78,7 +78,7 @@ struct RecipesView: View {
                                 .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     // Cooking
-                                    Button("Cooked", systemImage: "fork.knife") {
+                                    Button(recipe.cookActionName, systemImage: recipe.cookActionIconName) {
                                         recipe.doCookAction(modelContext: modelContext)
                                     }
                                     .tint(.green)
@@ -97,10 +97,7 @@ struct RecipesView: View {
                                 }
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button("Delete", systemImage: "trash", role: .destructive) {
-                                        Log.log("Delete recipe '\(recipe.name)'")
-                                        modelContext.updateModel { _ in
-                                            modelContext.delete(recipe)
-                                        }
+                                        recipe.doDeleteAction(modelContext: modelContext)
                                     }
                                 }
                             }

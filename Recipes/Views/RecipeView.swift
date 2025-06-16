@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RecipeView: View {
     @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) private var dismiss
 
     private let recipe: Recipe
 
@@ -25,33 +26,52 @@ struct RecipeView: View {
                     .imageScale(.large)
                     .foregroundStyle(Color.accentColor)
                     .frame(minWidth: 32, maxWidth: 32)
-                Text(recipe.name).font(.title3)
-                Spacer()
-                Button("Edit") {
-                    isShowingEdit = true
+                Text(recipe.name).font(.title)
+            }.padding(.bottom, 2)
+            VStack(alignment: .leading) {
+                if let firstMade = recipe.firstCookedTextLong {
+                    Text(firstMade)
                 }
-            }
-            if let servings = recipe.servings {
-                Text(servings).font(.body)
-            }
-            Text(recipe.location)
+                Text(recipe.lastCookedTextLong)
+            }.padding(.bottom, 2)
+            VStack(alignment: .leading) {
+                Text("From \(Image(systemName: recipe.book.symbolName))\(recipe.location).")
+                Text(recipe.servings).font(.body)
+                if let urlText = recipe.url, let url = URL(string: urlText) {
+                    let host = url.host(percentEncoded: false).map { " (\($0))" } ?? "."
+                    Link("On the web\(host)", destination: url)
+                }
+            }.padding(.bottom, 2)
 
-            // tbd add some vspace here :(
-            if let lastCookedText = recipe.lastCookedText {
-                Text(lastCookedText) // tbd link to history
-                // tbd exact date
-            }
-            // tbd first made X, made Y times total
-
-            // tbd vspace
-
-            if let url = recipe.url {
-                Text(url)
-                // tbd linkable
-            }
-
-            // tbd presentation
             Text(recipe.notes)
+
+            HStack {
+                Spacer()
+                HStack {
+                    Button("", systemImage: "clock") {}
+                    Button("", systemImage: recipe.cookActionIconName) {
+                        recipe.doCookAction(modelContext: modelContext)
+                    }
+                    Button("", systemImage: recipe.planActionIconName) {
+                        recipe.doPlanAction(modelContext: modelContext)
+                    }
+                    Button("", systemImage: recipe.pinActionIconName) {
+                        recipe.doPinAction(modelContext: modelContext)
+                    }
+                    Button("", systemImage: "square.and.pencil") {
+                        isShowingEdit = true
+                    }
+                    Button("", systemImage: "trash", role: .destructive) {
+                        recipe.doDeleteAction(modelContext: modelContext)
+                        dismiss()
+                    }
+                }
+                .buttonBorderShape(.capsule)
+                .padding()
+                .background(.regularMaterial)
+                .clipShape(.capsule)
+                Spacer()
+            }
         }
         .padding()
         .sheet(isPresented: $isShowingEdit) {
@@ -59,4 +79,19 @@ struct RecipeView: View {
         }
         Spacer()
     }
+}
+
+import SwiftData
+
+private struct RecipePreviewView: View {
+    @Query(sort: \Recipe.name) private var recipes: [Recipe]
+    var body: some View {
+        if let recipe = recipes.first {
+            RecipeView(recipe: recipe)
+        }
+    }
+}
+
+#Preview(traits: .previewObjects) {
+    RecipePreviewView()
 }
