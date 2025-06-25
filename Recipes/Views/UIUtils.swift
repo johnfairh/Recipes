@@ -19,7 +19,58 @@ extension Binding {
     }
 }
 
-///
+extension View {
+    /// Applies the given transform if the given condition evaluates to `true`.
+    /// - Parameters:
+    ///   - condition: The condition to evaluate.
+    ///   - transform: The transform to apply to the source `View`.
+    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
+
+struct RegexTextField: View {
+    init(regex: Binding<any RegexComponent>, regexView: Binding<String>, prompt: String) {
+        self.regex = regex
+        self.regexView = regexView
+        self.prompt = prompt
+    }
+
+    var regex: Binding<any RegexComponent>
+    var regexView: Binding<String>
+    let prompt: String
+    @State var valid: Bool = true
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            TextField("", text: regexView, prompt: Text(prompt))
+                .onChange(of: regexView.wrappedValue) { _, newValue in
+                    if let re = try? Regex(newValue).ignoresCase() {
+                        valid = true
+                        regex.wrappedValue = re
+                    } else {
+                        valid = false
+                    }
+                }
+                .textFieldStyle(.roundedBorder)
+                .textInputAutocapitalization(.never)
+            if !valid {
+                Text("Invalid regex")
+                    .font(.footnote)
+                    .foregroundColor(.red)
+            }
+        }
+    }
+}
+
+// MARK: MultiLineTextField
+
+/// This adds a prompt & a minimum height to a ``TextEditor``.`
 struct MultiLineTextField: View {
     init(text: Binding<String>, prompt: String, minHeight: CGFloat = 180) {
         self.text = text

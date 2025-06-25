@@ -28,20 +28,33 @@ struct RecipesView: View {
     @State private var selected: Recipe? = nil
 
     @State private var isShowingCreate: Bool = false
+    @State private var isShowingFilter: Bool = false
 
     @State private var searchText: String = ""
 
     @Binding private var invokedRecipe: Recipe?
+
+    @State private var filterList: RecipeFilterList? = nil
 
     init(invokedRecipe: Binding<Recipe?>) {
         self._invokedRecipe = invokedRecipe
     }
 
     var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
-        if searchText.isEmpty {
-            return recipes
+        let filtered: SectionedResults<Recipe.Lifecycle, Recipe>
+
+        if let filterList {
+            filtered = recipes.filter { filterList.pass(recipe: $0) }
+        } else {
+            filtered = recipes
         }
-        return recipes.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+
+        if searchText.isEmpty {
+            return filtered
+        }
+        return filtered.filter {
+            $0.name.localizedCaseInsensitiveContains(searchText)
+        }
     }
 
     var body: some View {
@@ -111,10 +124,8 @@ struct RecipesView: View {
 #endif
             .toolbar {
                 ToolbarItem {
-                    Button("Undo", systemImage: "arrow.uturn.backward") {
-                        withAnimation {
-                            modelContext.undo()
-                        }
+                    Button("Filter", systemImage: filterList == nil ? "line.3.horizontal.decrease" : "line.3.horizontal.decrease.circle.fill") {
+                        isShowingFilter = true
                     }
                 }
                 ToolbarItem {
@@ -130,12 +141,15 @@ struct RecipesView: View {
         .sheet(isPresented: $isShowingCreate) {
             CreateEditRecipeView(parentModelContext: modelContext)
         }
+        .sheet(isPresented: $isShowingFilter) {
+            RecipeFilterView(filterList: $filterList)
+                .presentationDetents([.fraction(0.33), .medium, .large])
+                .presentationDragIndicator(.hidden)
+        }
         .sheet(item: $selected) { itm in
             RecipeView(recipe: itm)
                 .presentationDetents([.fraction(0.33), .medium, .large])
                 .presentationDragIndicator(.automatic)
-// This causes odd behaviour when flipping from one sheet to another
-//                .presentationBackgroundInteraction(.enabled)
         }
         .onChange(of: invokedRecipe) {
             if selected == nil && invokedRecipe != nil {
@@ -146,6 +160,14 @@ struct RecipesView: View {
     }
 }
 
-//#Preview(traits: .previewObjects) {
-//    RecipesView()
-//}
+struct RecipesContainerView: View {
+    @State var invocation: Recipe?
+
+    var body: some View {
+        RecipesView(invokedRecipe: $invocation)
+    }
+}
+
+#Preview(traits: .previewObjects) {
+    RecipesContainerView()
+}
