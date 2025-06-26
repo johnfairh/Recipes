@@ -61,7 +61,12 @@ struct RecipesView: View {
         NavigationSplitView {
             List {
                 if !searchText.isEmpty && filteredRecipes.isEmpty {
-                    ContentUnavailableView.search
+                    ContentUnavailableView.search(text: searchText)
+                } else if filterList != nil && filteredRecipes.isEmpty {
+                    ContentUnavailableView(
+                        "No Filtered Results",
+                        systemImage: "line.3.horizontal.decrease",
+                        description: Text("Clear or edit the filters"))
                 } else {
                     ForEach(filteredRecipes) { section in
                         Section(section.id.name) {
@@ -80,7 +85,7 @@ struct RecipesView: View {
                                     .padding(.leading, 8)
                                     Spacer()
                                 }
-                                .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
+                                .contentShape(Rectangle())
                                 .onTapGesture {
                                     if selected == recipe {
                                         selected = nil
@@ -123,8 +128,18 @@ struct RecipesView: View {
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
 #endif
             .toolbar {
+                if filterList != nil {
+                    ToolbarItem {
+                        Button {
+                            filterList = nil
+                        } label: {
+                            Image("custom.line.3.horizontal.decrease.badge.xmark")
+                        }
+                        .padding(.top, 9)
+                    }
+                }
                 ToolbarItem {
-                    Button("Filter", systemImage: filterList == nil ? "line.3.horizontal.decrease" : "line.3.horizontal.decrease.circle.fill") {
+                    Button("Filter", systemImage: "line.3.horizontal.decrease") {
                         isShowingFilter = true
                     }
                 }
@@ -149,7 +164,7 @@ struct RecipesView: View {
         .sheet(item: $selected) { itm in
             RecipeView(recipe: itm)
                 .presentationDetents([.fraction(0.33), .medium, .large])
-                .presentationDragIndicator(.automatic)
+                .presentationDragIndicator(.hidden)
         }
         .onChange(of: invokedRecipe) {
             if selected == nil && invokedRecipe != nil {

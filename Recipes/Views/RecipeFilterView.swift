@@ -38,10 +38,22 @@ struct RecipeFilterView: View {
 
     var body: some View {
         VStack {
-            Text("Set Filters")
-                .font(.title)
-                .bold()
-                .padding(.top, 6)
+            HStack {
+                Button("", systemImage: "xmark.circle", role: .destructive) {
+                    filterList = .empty
+                }
+                Spacer()
+                Text("Set Filters")
+                    .font(.title)
+                    .bold()
+                Spacer()
+                Button("", systemImage: "checkmark.circle") {
+                    apply()
+                }
+            }
+            .font(.title)
+            .padding(.top, 6)
+
             HStack {
                 Menu {
                     Button("Match all") {
@@ -51,7 +63,7 @@ struct RecipeFilterView: View {
                         filterList.allNotAny = false
                     }
                 } label: {
-                    Text(filterList.allNotAny ? "Match all conditions:" : "Match any condition:")
+                    Text(filterList.allNotAny ? "Match all:" : "Match any:")
                 }
                 Spacer()
             }
@@ -76,7 +88,7 @@ struct RecipeFilterView: View {
 
                     Spacer()
                     Button(role: .destructive) {
-                        let idx = filterList.filters.firstIndex(where:  { $0.id == filter.id})!
+                        let idx = filterList.filters.firstIndex(where: { $0.id == filter.id})!
                         filterList.filters.remove(at: idx)
                     } label: {
                         Image(systemName: "minus.circle")
@@ -93,11 +105,6 @@ struct RecipeFilterView: View {
                 }
             }.padding(.top, 4)
 
-            Button("Apply") {
-                save()
-                dismiss()
-            }
-
             Spacer()
         }
         .padding()
@@ -108,12 +115,13 @@ struct RecipeFilterView: View {
         }
     }
 
-    func save() {
+    func apply() {
         if filterList.filters.isEmpty {
             savedFilterList = nil
         } else {
             savedFilterList = filterList
         }
+        dismiss()
     }
 }
 

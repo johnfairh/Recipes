@@ -55,6 +55,10 @@ struct RecipeFilterList {
     static var sample: RecipeFilterList {
         .init(filters: [.sample], allNotAny: true)
     }
+
+    static var empty: RecipeFilterList {
+        .init(filters: [], allNotAny: true)
+    }
 }
 
 // MARK: Filter Pass
