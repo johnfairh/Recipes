@@ -10,7 +10,7 @@ import Foundation
 struct RecipeFilter: Identifiable {
     let id = UUID()
 
-    enum Kind {
+    enum Kind: String, CaseIterable, Identifiable {
         case name // regex
         case book // book
         case url // regex
@@ -21,6 +21,8 @@ struct RecipeFilter: Identifiable {
         case importedCooked // nil
         case cookedSince // Date
         case notes // regex
+
+        var id: String { self.rawValue }
     }
     var kind: Kind
 
@@ -28,11 +30,11 @@ struct RecipeFilter: Identifiable {
     var regex: any RegexComponent
     var regexView: String
 
-    // var book: Book // ? grumble
-    // var kind: Recipe.Kind
-    // var count: Int
-    // var exact: Bool
-    // var date: Date
+    var book: Book?
+    var recipeKind: Recipe.Kind
+    var count: Int
+    var exact: Bool
+    var date: Date
 
     var includeNotExclude: Bool
 
@@ -41,6 +43,10 @@ struct RecipeFilter: Identifiable {
         self.regex = #//#
         self.regexView = ""
         self.includeNotExclude = true
+        self.recipeKind = .meal
+        self.date = Date()
+        self.count = 1
+        self.exact = true
     }
 
     static var sample: RecipeFilter {
@@ -61,7 +67,26 @@ struct RecipeFilterList {
     }
 }
 
-// MARK: Filter Pass
+// MARK: UI
+
+extension RecipeFilter.Kind {
+    var label: String {
+        switch self {
+        case .name: return "Name like"
+        case .book: return "Book"
+        case .url: return "URL like"
+        case .kind: return "Kind"
+        case .servings: return "Servings"
+        case .quantity: return "Quantity like"
+        case .neverCooked: return "Never been cooked"
+        case .importedCooked: return "Imported"
+        case .cookedSince: return "Cooked since"
+        case .notes: return "Notes like"
+        }
+    }
+}
+
+// MARK: Recipe Pass/Fail Filter
 
 extension RecipeFilter {
     private func passCore(recipe: Recipe) -> Bool {
@@ -69,22 +94,19 @@ extension RecipeFilter {
         case .name:
             return recipe.name.contains(regex)
         case .book:
-            preconditionFailure()
-//            return recipe.book == book
+            return recipe.book == book
         case .url:
             return recipe.url?.contains(regex) ?? false
         case .kind:
-            preconditionFailure()
-//            return recipe.kind == kind
+            return recipe.kind == recipeKind
         case .servings:
-//            guard let servingsCount = recipe.servingsCount else {
-//                return false
-//            }
-            preconditionFailure()
-//            if exact {
-//                return servingsCount == count
-//            }
-//            return servingsCount >= count
+            guard let servingsCount = recipe.servingsCount else {
+                return false
+            }
+            if exact {
+                return servingsCount == count
+            }
+            return servingsCount >= count
         case .quantity:
             return recipe.quantity?.contains(regex) ?? false
         case .neverCooked:
@@ -92,11 +114,10 @@ extension RecipeFilter {
         case .importedCooked:
             return recipe.lastCookedTime == .importedRecipe
         case .cookedSince:
-//            guard let lastCookedTime = recipe.lastCookedTime else {
-//                return false
-//            }
-            preconditionFailure()
-//            return lastCookedTime >= date
+            guard let lastCookedTime = recipe.lastCookedTime else {
+                return false
+            }
+            return lastCookedTime >= date
         case .notes:
             return recipe.notes.contains(regex)
         }

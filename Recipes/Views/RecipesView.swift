@@ -16,8 +16,11 @@ extension Recipe {
     }
 }
 
+
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
+
+    @Namespace private var namespace
 
     @SectionedQuery(\Recipe.lifecycle, sort: [
         .init(\.lifecycleRaw, order: .forward),
@@ -118,6 +121,7 @@ struct RecipesView: View {
                                         recipe.doDeleteAction(modelContext: modelContext)
                                     }
                                 }
+                                .matchedTransitionSource(id: "r-info", in: namespace)
                             }
                         }
                     }
@@ -165,6 +169,7 @@ struct RecipesView: View {
             RecipeView(recipe: itm)
                 .presentationDetents([.fraction(0.33), .medium, .large])
                 .presentationDragIndicator(.hidden)
+                .navigationTransition(.zoom(sourceID: "r-info", in: namespace))
         }
         .onChange(of: invokedRecipe) {
             if selected == nil && invokedRecipe != nil {

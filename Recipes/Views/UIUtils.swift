@@ -65,6 +65,11 @@ struct RegexTextField: View {
                     .foregroundColor(.red)
             }
         }
+        .onAppear {
+            if (try? Regex(regexView.wrappedValue)) == nil {
+                valid = false
+            }
+        }
     }
 }
 

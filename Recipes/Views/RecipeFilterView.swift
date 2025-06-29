@@ -10,14 +10,55 @@ import SwiftData
 
 struct RecipeFilterItemView: View {
     @Binding var filter: RecipeFilter
+    let books: [Book]
+
     @State var string = "boo"
 
     var body: some View {
         switch filter.kind {
-        case .name:
+        case .name, .url, .quantity, .notes:
             RegexTextField(regex: $filter.regex, regexView: $filter.regexView, prompt: "Regex")
-        default:
-            TextField("boo", text: $string).border(.secondary)
+
+        case .neverCooked, .importedCooked:
+            EmptyView()
+
+        case .book:
+            Picker("Book", selection: $filter.book) {
+                ForEach(books) { book in
+                    Text(book.shortName).tag(book)
+                }
+            }
+            .onAppear {
+                if filter.book == nil, let firstBook = books.first {
+                    filter.book = firstBook
+                }
+            }
+
+        case .kind:
+            Picker("Type", selection: $filter.recipeKind) {
+                Text("Meal").tag(Recipe.Kind.meal)
+                Text("Sweet").tag(Recipe.Kind.sweet)
+                Text("Other").tag(Recipe.Kind.other)
+            }
+
+        case .cookedSince:
+            DatePicker("", selection: $filter.date, displayedComponents: [.date])
+                .datePickerStyle(.automatic)
+                .offset(y: -24)
+
+        case .servings:
+            Menu {
+                Button("=") {
+                    filter.exact = true
+                }
+                Button(">=") {
+                    filter.exact = false
+                }
+            } label: {
+                Text(filter.exact ? "=" : ">=")
+            }
+            Stepper(String(filter.count), value: $filter.count, in: 1...10)
+                .offset(y: -24)
         }
     }
 }
@@ -82,9 +123,8 @@ struct RecipeFilterView: View {
                         Image(systemName: filter.includeNotExclude ? "text.badge.plus" : "text.badge.minus")
                     }
 
-                    Spacer()
-                    Text("Name is like") // XXX enum dispatch
-                    RecipeFilterItemView(filter: $filter)
+                    Text(filter.kind.label)
+                    RecipeFilterItemView(filter: $filter, books: books)
 
                     Spacer()
                     Button(role: .destructive) {
@@ -98,8 +138,12 @@ struct RecipeFilterView: View {
 
             HStack {
                 Spacer()
-                Button {
-                    filterList.filters.append(.sample)
+                Menu {
+                    ForEach(RecipeFilter.Kind.allCases) { kind in
+                        Button(kind.label) {
+                            filterList.filters.append(RecipeFilter(kind: kind))
+                        }
+                    }
                 } label: {
                     Image(systemName: "plus.circle")
                 }
