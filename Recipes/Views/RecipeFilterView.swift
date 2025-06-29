@@ -79,17 +79,18 @@ struct RecipeFilterView: View {
 
     var body: some View {
         VStack {
-            HStack {
-                Button("", systemImage: "xmark.circle", role: .destructive) {
-                    filterList = .empty
-                }
-                Spacer()
-                Text("Set Filters")
+            HStack(alignment: .center) {
+                Text("Filter")
                     .font(.title)
                     .bold()
                 Spacer()
-                Button("", systemImage: "checkmark.circle") {
-                    apply()
+                HStack(alignment: .firstTextBaseline) {
+                    Button("", systemImage: "trash", role: .destructive) {
+                        filterList = .empty
+                    }
+                    Button("", systemImage: "checkmark.circle") {
+                        apply()
+                    }
                 }
             }
             .font(.title)
@@ -108,7 +109,7 @@ struct RecipeFilterView: View {
                 }
                 Spacer()
             }
-            .padding(.bottom, 4)
+            .padding([.bottom, .top], 4)
 
             ForEach($filterList.filters) { $filter in
                 HStack(alignment: .firstTextBaseline) {
