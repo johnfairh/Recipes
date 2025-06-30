@@ -16,7 +16,6 @@ extension Recipe {
     }
 }
 
-
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
 

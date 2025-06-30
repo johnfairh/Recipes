@@ -30,6 +30,9 @@ struct AppTabView: View {
             Tab("Recipes", systemImage: "fork.knife.circle", value: "Recipes") {
                 RecipesView(invokedRecipe: $invokedRecipe)
             }
+            Tab("History", systemImage: "clock.fill", value: "History") {
+                HistoryView()
+            }
             Tab("Books", systemImage: "books.vertical.circle", value: "Books") {
                 BooksView()
             }
@@ -49,4 +52,8 @@ struct AppTabView: View {
             invokedRecipe = recipe
         }
     }
+}
+
+#Preview(traits: .previewObjects) {
+    AppTabView()
 }

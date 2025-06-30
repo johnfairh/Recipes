@@ -27,5 +27,31 @@ extension Version3Schema {
             self.recipe = recipe
             self.notes = notes
         }
+
+        @Transient
+        private var _monthCode: Int? = nil
+    }
+}
+
+// MARK: MonthCode - for sectioning in the UI
+
+extension Cooking {
+    var monthCode: Int {
+        if let _monthCode { return _monthCode }
+
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month], from: timestamp)
+
+        let mc = components.year! * 100 + components.month!
+        _monthCode = mc
+        return mc
+    }
+}
+
+extension Int {
+    var decodeMonthCode: String {
+        let year = self / 100
+        let month = self % 100
+        return "\(Calendar.current.monthSymbols[month - 1]) \(year)"
     }
 }

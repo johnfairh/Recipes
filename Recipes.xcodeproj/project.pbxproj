@@ -12,6 +12,7 @@
 		021C937B2D9729FE00CC442F /* SectionedResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021C937A2D9729FE00CC442F /* SectionedResults.swift */; };
 		021C937C2D9729FE00CC442F /* SectionedQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021C93792D9729FE00CC442F /* SectionedQuery.swift */; };
 		023D0A5B2D6DFEB100AF8D3D /* Schemas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023D0A5A2D6DFEAC00AF8D3D /* Schemas.swift */; };
+		024869992E12EFDE00D7EC2B /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024869982E12EFDB00D7EC2B /* HistoryView.swift */; };
 		024C8E5A2E0AA9C800D2857F /* RecipeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024C8E592E0AA9C500D2857F /* RecipeFilter.swift */; };
 		024C8E5B2E0AA9C800D2857F /* RecipeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024C8E592E0AA9C500D2857F /* RecipeFilter.swift */; };
 		024C8E5D2E0AB76200D2857F /* RecipeFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024C8E5C2E0AB75B00D2857F /* RecipeFilterView.swift */; };
@@ -78,6 +79,7 @@
 		021C93792D9729FE00CC442F /* SectionedQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedQuery.swift; sourceTree = "<group>"; };
 		021C937A2D9729FE00CC442F /* SectionedResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedResults.swift; sourceTree = "<group>"; };
 		023D0A5A2D6DFEAC00AF8D3D /* Schemas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schemas.swift; sourceTree = "<group>"; };
+		024869982E12EFDB00D7EC2B /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		024C8E592E0AA9C500D2857F /* RecipeFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFilter.swift; sourceTree = "<group>"; };
 		024C8E5C2E0AB75B00D2857F /* RecipeFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFilterView.swift; sourceTree = "<group>"; };
 		02BA11DF2DE5CB2B008FC60F /* Version2Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version2Models.swift; sourceTree = "<group>"; };
@@ -226,6 +228,7 @@
 				02C144962D5CADAB009C99CF /* RecipesView.swift */,
 				02BA11E12DE5F60E008FC60F /* RecipeView.swift */,
 				02C144982D5CADD4009C99CF /* BooksView.swift */,
+				024869982E12EFDB00D7EC2B /* HistoryView.swift */,
 				024C8E5C2E0AB75B00D2857F /* RecipeFilterView.swift */,
 				02BA11E72DE72F24008FC60F /* CreateEditBookView.swift */,
 				02BA11E32DE619C0008FC60F /* CreateEditRecipeView.swift */,
@@ -303,7 +306,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					02BA12062DE74FF0008FC60F = {
 						CreatedOnToolsVersion = 16.4;
@@ -382,6 +385,7 @@
 				02BA123B2DE8E4E7008FC60F /* RecipeIntents.swift in Sources */,
 				02BA11E62DE71754008FC60F /* UIUtils.swift in Sources */,
 				02BA11E02DE5CB2E008FC60F /* Version2Models.swift in Sources */,
+				024869992E12EFDE00D7EC2B /* HistoryView.swift in Sources */,
 				02C1449D2D5E3561009C99CF /* Book.swift in Sources */,
 				02C1449F2D5E3C90009C99CF /* ModelUtils.swift in Sources */,
 				024C8E5A2E0AA9C800D2857F /* RecipeFilter.swift in Sources */,
@@ -531,6 +535,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -587,6 +592,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -601,8 +607,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Recipes/Preview Content\"";
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -641,8 +649,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Recipes/Preview Content\"";
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
