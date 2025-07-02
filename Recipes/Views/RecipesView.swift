@@ -19,6 +19,8 @@ extension Recipe {
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
 
+    @Environment(UIState.self) var uiState: UIState
+
     @Namespace private var namespace
 
     @SectionedQuery(\Recipe.lifecycle, sort: [
@@ -27,20 +29,10 @@ struct RecipesView: View {
     ])
     private var recipes: SectionedResults<Recipe.Lifecycle, Recipe>
 
-    @State private var selected: Recipe? = nil
-
     @State private var isShowingCreate: Bool = false
     @State private var isShowingFilter: Bool = false
 
-    @State private var searchText: String = ""
-
-    @Binding private var invokedRecipe: Recipe?
-
     @State private var filterList: RecipeFilterList? = nil
-
-    init(invokedRecipe: Binding<Recipe?>) {
-        self._invokedRecipe = invokedRecipe
-    }
 
     var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
         let filtered: SectionedResults<Recipe.Lifecycle, Recipe>
@@ -51,19 +43,20 @@ struct RecipesView: View {
             filtered = recipes
         }
 
-        if searchText.isEmpty {
+        if uiState.recipeSearchText.isEmpty {
             return filtered
         }
         return filtered.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
+            $0.name.localizedCaseInsensitiveContains(uiState.recipeSearchText)
         }
     }
 
     var body: some View {
+        @Bindable var uiState = uiState
         NavigationSplitView {
             List {
-                if !searchText.isEmpty && filteredRecipes.isEmpty {
-                    ContentUnavailableView.search(text: searchText)
+                if !uiState.recipeSearchText.isEmpty && filteredRecipes.isEmpty {
+                    ContentUnavailableView.search(text: uiState.recipeSearchText)
                 } else if filterList != nil && filteredRecipes.isEmpty {
                     ContentUnavailableView(
                         "No Filtered Results",
@@ -89,13 +82,13 @@ struct RecipesView: View {
                                 }
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    if selected == recipe {
-                                        selected = nil
+                                    if uiState.selectedRecipe == recipe {
+                                        uiState.selectedRecipe = nil
                                     } else {
-                                        selected = recipe
+                                        uiState.selectedRecipe = recipe
                                     }
                                 }
-                                .listRowBackground(recipe.backgroundColor(isSelected: selected == recipe))
+                                .listRowBackground(recipe.backgroundColor(isSelected: uiState.selectedRecipe == recipe))
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     // Cooking
                                     Button(recipe.cookActionName, systemImage: recipe.cookActionIconName) {
@@ -152,7 +145,7 @@ struct RecipesView: View {
                     }
                 }
             }
-            .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Recipe name")
+            .searchable(text: $uiState.recipeSearchText, placement: .navigationBarDrawer, prompt: "Recipe name")
         } detail: {
             Text("Select an item")
         }
@@ -164,29 +157,15 @@ struct RecipesView: View {
                 .presentationDetents([.fraction(0.33), .medium, .large])
                 .presentationDragIndicator(.hidden)
         }
-        .sheet(item: $selected) { itm in
+        .sheet(item: $uiState.selectedRecipe) { itm in
             RecipeView(recipe: itm)
                 .presentationDetents([.fraction(0.33), .medium, .large])
                 .presentationDragIndicator(.hidden)
                 .navigationTransition(.zoom(sourceID: "r-info", in: namespace))
         }
-        .onChange(of: invokedRecipe) {
-            if selected == nil && invokedRecipe != nil {
-                selected = invokedRecipe
-            }
-            invokedRecipe = nil
-        }
-    }
-}
-
-struct RecipesContainerView: View {
-    @State var invocation: Recipe?
-
-    var body: some View {
-        RecipesView(invokedRecipe: $invocation)
     }
 }
 
 #Preview(traits: .previewObjects) {
-    RecipesContainerView()
+    RecipesView()
 }

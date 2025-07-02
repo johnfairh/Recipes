@@ -16,24 +16,24 @@ struct RecipesApp: App {
         }
         .modelContainer(DatabaseLoader.modelContainer)
         .environment(Log.shared)
+        .environment(UIState())
     }
 }
 
 struct AppTabView: View {
     @Environment(\.modelContext) var modelContext
-
-    @State var selectedTab = ""
-    @State var invokedRecipe: Recipe?
+    @Environment(UIState.self) var uiState: UIState
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            Tab("Recipes", systemImage: "fork.knife.circle", value: "Recipes") {
-                RecipesView(invokedRecipe: $invokedRecipe)
+        @Bindable var uiState = uiState
+        TabView(selection: $uiState.selectedTab) {
+            Tab("Recipes", systemImage: "fork.knife.circle", value: UIState.TabValue.recipes) {
+                RecipesView()
             }
-            Tab("History", systemImage: "clock.fill", value: "History") {
+            Tab("History", systemImage: "clock.fill", value: UIState.TabValue.history) {
                 HistoryView()
             }
-            Tab("Books", systemImage: "books.vertical.circle", value: "Books") {
+            Tab("Books", systemImage: "books.vertical.circle", value: UIState.TabValue.books) {
                 BooksView()
             }
         }
@@ -48,8 +48,8 @@ struct AppTabView: View {
             }
 
             Log.log("URL-found-recipe: \(recipe.name)")
-            selectedTab = "Recipes"
-            invokedRecipe = recipe
+            uiState.selectedTab = .recipes
+            uiState.selectedRecipe = recipe
         }
     }
 }

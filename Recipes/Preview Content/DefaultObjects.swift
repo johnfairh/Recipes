@@ -17,7 +17,9 @@ struct PreviewObjects: PreviewModifier {
     }
 
     func body(content: Content, context: ModelContainer) -> some View {
-        content.modelContainer(context)
+        content
+            .modelContainer(context)
+            .environment(UIState())
     }
 }
 
