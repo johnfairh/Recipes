@@ -41,7 +41,7 @@ struct RecipesView: View {
             return filtered
         }
         return filtered.filter {
-            $0.name.localizedCaseInsensitiveContains(uiState.recipesTab.searchText)
+            return ($0.name + $0.notes).localizedCaseInsensitiveContains(uiState.recipesTab.searchText)
         }
     }
 
@@ -139,7 +139,7 @@ struct RecipesView: View {
                     }
                 }
             }
-            .searchable(text: $uiState.searchText, placement: .navigationBarDrawer, prompt: "Recipe name")
+            .searchable(text: $uiState.searchText, placement: .navigationBarDrawer, prompt: "Recipe name or notes")
         } detail: {
             Text("Select an item")
         }
