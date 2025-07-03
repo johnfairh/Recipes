@@ -12,7 +12,7 @@ class UIState {
 
     // MARK: Tabs
 
-    enum TabValue: String {
+    enum TabValue: String, CaseIterable {
         case recipes = "Recipes"
         case history = "History"
         case books = "Books"
@@ -22,12 +22,42 @@ class UIState {
 
     // MARK: Recipes Tab
 
-    var selectedRecipe: Recipe? = nil
-    var recipeSearchText: String = ""
+    @Observable
+    class RecipesTab {
+        var selected: Recipe? = nil
+        var searchText = ""
+
+        init() {}
+    }
+
+    let recipesTab = RecipesTab()
 
     // MARK: History Tab
-    var historySearchText: String = ""
+
+    @Observable
+    class HistoryTab {
+        var searchText = ""
+
+        init() {}
+    }
+    let historyTab = HistoryTab()
 
     init() {
+    }
+}
+
+
+// MARK: Navigation helpers
+
+extension UIState {
+    func show(recipe: Recipe) {
+        selectedTab = .recipes
+        recipesTab.selected = recipe
+    }
+
+    // XXX hmm could do with exact match...
+    func showHistory(for recipe: Recipe) {
+        selectedTab = .history
+        historyTab.searchText = recipe.name
     }
 }

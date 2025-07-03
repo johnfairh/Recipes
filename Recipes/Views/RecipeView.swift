@@ -10,6 +10,7 @@ import SwiftUI
 struct RecipeView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(UIState.self) var uiState: UIState
 
     private let recipe: Recipe
 
@@ -48,7 +49,9 @@ struct RecipeView: View {
             HStack {
                 Spacer()
                 HStack {
-                    Button("", systemImage: "clock") {}
+                    Button("", systemImage: "clock") {
+                        uiState.showHistory(for: recipe)
+                    }
                     Button("", systemImage: recipe.cookActionIconName) {
                         recipe.doCookAction(modelContext: modelContext)
                     }

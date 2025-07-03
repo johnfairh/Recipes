@@ -35,28 +35,22 @@ struct RecipesView: View {
     @State private var filterList: RecipeFilterList? = nil
 
     var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
-        let filtered: SectionedResults<Recipe.Lifecycle, Recipe>
+        let filtered = filterList.map { fl in recipes.filter { fl.pass(recipe: $0) }} ?? recipes
 
-        if let filterList {
-            filtered = recipes.filter { filterList.pass(recipe: $0) }
-        } else {
-            filtered = recipes
-        }
-
-        if uiState.recipeSearchText.isEmpty {
+        if uiState.recipesTab.searchText.isEmpty {
             return filtered
         }
         return filtered.filter {
-            $0.name.localizedCaseInsensitiveContains(uiState.recipeSearchText)
+            $0.name.localizedCaseInsensitiveContains(uiState.recipesTab.searchText)
         }
     }
 
     var body: some View {
-        @Bindable var uiState = uiState
+        @Bindable var uiState = uiState.recipesTab
         NavigationSplitView {
             List {
-                if !uiState.recipeSearchText.isEmpty && filteredRecipes.isEmpty {
-                    ContentUnavailableView.search(text: uiState.recipeSearchText)
+                if !uiState.searchText.isEmpty && filteredRecipes.isEmpty {
+                    ContentUnavailableView.search(text: uiState.searchText)
                 } else if filterList != nil && filteredRecipes.isEmpty {
                     ContentUnavailableView(
                         "No Filtered Results",
@@ -82,13 +76,13 @@ struct RecipesView: View {
                                 }
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    if uiState.selectedRecipe == recipe {
-                                        uiState.selectedRecipe = nil
+                                    if uiState.selected == recipe {
+                                        uiState.selected = nil
                                     } else {
-                                        uiState.selectedRecipe = recipe
+                                        uiState.selected = recipe
                                     }
                                 }
-                                .listRowBackground(recipe.backgroundColor(isSelected: uiState.selectedRecipe == recipe))
+                                .listRowBackground(recipe.backgroundColor(isSelected: uiState.selected == recipe))
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     // Cooking
                                     Button(recipe.cookActionName, systemImage: recipe.cookActionIconName) {
@@ -145,7 +139,7 @@ struct RecipesView: View {
                     }
                 }
             }
-            .searchable(text: $uiState.recipeSearchText, placement: .navigationBarDrawer, prompt: "Recipe name")
+            .searchable(text: $uiState.searchText, placement: .navigationBarDrawer, prompt: "Recipe name")
         } detail: {
             Text("Select an item")
         }
@@ -157,7 +151,7 @@ struct RecipesView: View {
                 .presentationDetents([.fraction(0.33), .medium, .large])
                 .presentationDragIndicator(.hidden)
         }
-        .sheet(item: $uiState.selectedRecipe) { itm in
+        .sheet(item: $uiState.selected) { itm in
             RecipeView(recipe: itm)
                 .presentationDetents([.fraction(0.33), .medium, .large])
                 .presentationDragIndicator(.hidden)

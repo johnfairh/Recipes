@@ -5,33 +5,35 @@
 //  Created by John on 30/06/2025.
 //
 
-// UIState refactor per-tab
-// Move filtering & sheet popup from recipes into uistate
+// Add filtering + create into UIState
 // Do Books
-// Methods on UIState?
 
 import SwiftUI
 import SwiftData
 
 struct HistoryView: View {
-    @Environment(UIState.self) var uiState: UIState
+    @Environment(UIState.self) var appUIState: UIState
+
+    var uiState: UIState.HistoryTab {
+        appUIState.historyTab
+    }
 
     @SectionedQuery(\Cooking.monthCode, sort: \Cooking.timestamp, order: .reverse)
     var cookings: SectionedResults<Int, Cooking>
 
     var searchedCookings: SectionedResults<Int, Cooking> {
-        if uiState.historySearchText.isEmpty {
+        if uiState.searchText.isEmpty {
             return cookings
         }
-        return cookings.filter { $0.recipe.name.localizedCaseInsensitiveContains(uiState.historySearchText) }
+        return cookings.filter { $0.recipe.name.localizedCaseInsensitiveContains(uiState.searchText) }
     }
 
     var body: some View {
         @Bindable var uiState = uiState
         NavigationStack {
             List {
-                if !uiState.historySearchText.isEmpty && searchedCookings.isEmpty {
-                    ContentUnavailableView.search(text: uiState.historySearchText)
+                if !uiState.searchText.isEmpty && searchedCookings.isEmpty {
+                    ContentUnavailableView.search(text: uiState.searchText)
                 } else {
                     ForEach(searchedCookings) { section in
                         Section(section.id.decodeMonthCode) {
@@ -50,8 +52,7 @@ struct HistoryView: View {
                                 }
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    uiState.selectedRecipe = cooking.recipe
-                                    uiState.selectedTab = .recipes
+                                    appUIState.show(recipe: cooking.recipe)
                                 }
                             }
                         }
@@ -62,7 +63,7 @@ struct HistoryView: View {
 #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
 #endif
-            .searchable(text: $uiState.historySearchText, placement: .navigationBarDrawer, prompt: "Recipe name")
+            .searchable(text: $uiState.searchText, placement: .navigationBarDrawer, prompt: "Recipe name")
         }
     }
 }

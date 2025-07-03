@@ -20,6 +20,25 @@ struct RecipesApp: App {
     }
 }
 
+extension UIState.TabValue {
+    var systemImage: String {
+        switch self {
+        case .recipes: return "fork.knife.circle"
+        case .history: return "clock.fill"
+        case .books: return "books.vertical.circle"
+        }
+    }
+
+    @ViewBuilder
+    var view: some View {
+        switch self {
+        case .recipes: RecipesView()
+        case .history: HistoryView()
+        case .books: BooksView()
+        }
+    }
+}
+
 struct AppTabView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(UIState.self) var uiState: UIState
@@ -27,14 +46,10 @@ struct AppTabView: View {
     var body: some View {
         @Bindable var uiState = uiState
         TabView(selection: $uiState.selectedTab) {
-            Tab("Recipes", systemImage: "fork.knife.circle", value: UIState.TabValue.recipes) {
-                RecipesView()
-            }
-            Tab("History", systemImage: "clock.fill", value: UIState.TabValue.history) {
-                HistoryView()
-            }
-            Tab("Books", systemImage: "books.vertical.circle", value: UIState.TabValue.books) {
-                BooksView()
+            ForEach(UIState.TabValue.allCases, id: \UIState.TabValue.rawValue) { value in
+                Tab(value.rawValue, systemImage: value.systemImage, value: value) {
+                    value.view
+                }
             }
         }
         .onOpenURL { url in
@@ -48,8 +63,7 @@ struct AppTabView: View {
             }
 
             Log.log("URL-found-recipe: \(recipe.name)")
-            uiState.selectedTab = .recipes
-            uiState.selectedRecipe = recipe
+            uiState.show(recipe: recipe)
         }
     }
 }

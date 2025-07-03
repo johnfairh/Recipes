@@ -17,6 +17,12 @@ extension Binding {
     static func invertBool(_ backing: Binding<Bool>) -> Binding<Bool> {
         Binding<Bool>(get: { !backing.wrappedValue }, set: { backing.wrappedValue = !$0 })
     }
+
+    /// Manage a `T?` model property  to a boolean... hmm...
+    static func asBool<T>(_ backing: Binding<Optional<T>>) -> Binding<Bool> {
+        Binding<Bool>(get: { backing.wrappedValue != nil },
+                      set: { if !$0 { backing.wrappedValue = nil } else { preconditionFailure("Oops") } })
+    }
 }
 
 extension View {
