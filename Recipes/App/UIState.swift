@@ -27,9 +27,16 @@ class UIState {
         var selected: Recipe? = nil
         var searchText = ""
 
+        enum Sheet {
+            case create
+            case filter
+        }
+        var sheet: Sheet? = nil
+
+        var filterList: RecipeFilterList? = nil
+
         init() {}
     }
-
     let recipesTab = RecipesTab()
 
     // MARK: History Tab
@@ -41,6 +48,22 @@ class UIState {
         init() {}
     }
     let historyTab = HistoryTab()
+
+    // MARK: Books Tab
+
+    @Observable
+    class BooksTab {
+        var selected: Book? = nil
+
+        enum Sheet {
+            case create
+            case log
+        }
+        var sheet: Sheet? = nil
+
+        init() {}
+    }
+    let booksTab = BooksTab()
 
     init() {
     }

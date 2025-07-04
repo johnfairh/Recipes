@@ -20,6 +20,7 @@ struct PreviewObjects: PreviewModifier {
         content
             .modelContainer(context)
             .environment(UIState())
+            .environment(Log.shared)
     }
 }
 

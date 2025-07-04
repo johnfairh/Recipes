@@ -142,7 +142,7 @@ extension Date {
             return spellOut(month) + " months ago"
         }
         if month == 1 {
-            return "last month"
+            return "a month ago"
         }
         if day > 14 {
             return spellOut(day / 7) + " weeks ago"

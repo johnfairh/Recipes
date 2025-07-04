@@ -13,17 +13,10 @@ protocol WithSortOrder {
     var sortOrder: UInt { get }
 }
 
-extension WithSortOrder {
-    static func nextSortOrder(all: [Self]) -> UInt {
-        all.reduce(0) { soFar, next in
-            return max(soFar, next.sortOrder)
-        } + 1
-    }
-}
-
-extension WithSortOrder where Self: PersistentModel {
+extension Book {
     static func nextSortOrder(modelContext: ModelContext) -> UInt {
-        var fd = FetchDescriptor<Self>(sortBy: [.init(\.sortOrder, order: .reverse)])
+        var fd = FetchDescriptor<Book>(sortBy: [.init(\Book.sortOrder, order: .reverse)])
+        fd.propertiesToFetch = [\.sortOrder]
         fd.fetchLimit = 1
 
         do {
@@ -38,6 +31,7 @@ extension WithSortOrder where Self: PersistentModel {
         return 0
     }
 }
+
 
 // MARK: ModelObject - fetchability
 
@@ -123,7 +117,7 @@ extension ModelContext {
 import Foundation
 
 func IsPreview() -> Bool {
-    ProcessInfo.processInfo.processName == "XCPreviewAgent"
+    ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
 }
 
 extension String {

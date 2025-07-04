@@ -10,17 +10,19 @@ import SwiftData
 
 struct BooksView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(UIState.self) var appUIState: UIState
+
+    var uiState: UIState.BooksTab {
+        appUIState.booksTab
+    }
+
     @Query(sort: \Book.sortOrder) private var books: [Book]
 
     @State private var isCheckingReset: Bool = false
-    @State private var isShowingLog: Bool = false
-
-    @State private var isShowingCreate: Bool = false
-
-    @State private var selected: Book? = nil
 
     var body: some View {
-        NavigationSplitView {
+        @Bindable var uiState = uiState
+        NavigationStack {//plitView {
             List {
                 ForEach(books) { book in
                     HStack {
@@ -39,10 +41,10 @@ struct BooksView: View {
                     .deleteDisabled(book.recipes.count > 0)
                     .contentShape(Rectangle()) // this makes the hittest cover the entire cell...
                     .onTapGesture {
-                        if selected == book {
-                            selected = nil
+                        if uiState.selected == book {
+                            uiState.selected = nil
                         } else {
-                            selected = book
+                            uiState.selected = book
                         }
                     }
                 }
@@ -58,12 +60,12 @@ struct BooksView: View {
 
                 ToolbarItem {
                     Button("Add Book", systemImage: "plus") {
-                        isShowingCreate = true
+                        uiState.sheet = .create
                     }
                 }
             }
-        } detail: {
-            Text("Select an item")
+//        } detail: {
+//            Text("Select an item")
         }
         .confirmationDialog(
             "Are you sure?",
@@ -75,13 +77,17 @@ struct BooksView: View {
                 exit(0) // I guess
             }
         }
-        .sheet(isPresented: $isShowingLog) {
-            LogView()
+        .sheet(isPresented: .asBool($uiState.sheet)) {
+            switch uiState.sheet {
+            case .none:
+                EmptyView()
+            case .create:
+                CreateEditBookView(parentModelContext: modelContext)
+            case .log:
+                LogView()
+            }
         }
-        .sheet(isPresented: $isShowingCreate) {
-            CreateEditBookView(parentModelContext: modelContext)
-        }
-        .sheet(item: $selected) { itm in
+        .sheet(item: $uiState.selected) { itm in
             CreateEditBookView(parentModelContext: modelContext, book: itm)
         }
     }
@@ -91,7 +97,7 @@ struct BooksView: View {
         ToolbarItem {
             Menu {
                 Button("Log", systemImage: "pencil.and.list.clipboard") {
-                    isShowingLog = true
+                    uiState.sheet = .log
                 }
                 Button("Export", systemImage: "square.and.arrow.up.on.square") {
                     DatabaseLoader.importExport.export()

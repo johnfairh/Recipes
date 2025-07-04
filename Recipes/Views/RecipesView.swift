@@ -21,27 +21,21 @@ struct RecipesView: View {
 
     @Environment(UIState.self) var uiState: UIState
 
-    @Namespace private var namespace
-
     @SectionedQuery(\Recipe.lifecycle, sort: [
         .init(\.lifecycleRaw, order: .forward),
         .init(\.name, order: .forward)
     ])
     private var recipes: SectionedResults<Recipe.Lifecycle, Recipe>
 
-    @State private var isShowingCreate: Bool = false
-    @State private var isShowingFilter: Bool = false
-
-    @State private var filterList: RecipeFilterList? = nil
-
     var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
-        let filtered = filterList.map { fl in recipes.filter { fl.pass(recipe: $0) }} ?? recipes
+        let uiState = uiState.recipesTab
+        let filtered = uiState.filterList.map { fl in recipes.filter { fl.pass(recipe: $0) }} ?? recipes
 
-        if uiState.recipesTab.searchText.isEmpty {
+        if uiState.searchText.isEmpty {
             return filtered
         }
         return filtered.filter {
-            return ($0.name + $0.notes).localizedCaseInsensitiveContains(uiState.recipesTab.searchText)
+            return ($0.name + $0.notes).localizedCaseInsensitiveContains(uiState.searchText)
         }
     }
 
@@ -51,7 +45,7 @@ struct RecipesView: View {
             List {
                 if !uiState.searchText.isEmpty && filteredRecipes.isEmpty {
                     ContentUnavailableView.search(text: uiState.searchText)
-                } else if filterList != nil && filteredRecipes.isEmpty {
+                } else if uiState.filterList != nil && filteredRecipes.isEmpty {
                     ContentUnavailableView(
                         "No Filtered Results",
                         systemImage: "line.3.horizontal.decrease",
@@ -107,7 +101,6 @@ struct RecipesView: View {
                                         recipe.doDeleteAction(modelContext: modelContext)
                                     }
                                 }
-                                .matchedTransitionSource(id: "r-info", in: namespace)
                             }
                         }
                     }
@@ -118,10 +111,10 @@ struct RecipesView: View {
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
 #endif
             .toolbar {
-                if filterList != nil {
+                if uiState.filterList != nil {
                     ToolbarItem {
                         Button {
-                            filterList = nil
+                            uiState.filterList = nil
                         } label: {
                             Image("custom.line.3.horizontal.decrease.badge.xmark")
                         }
@@ -130,12 +123,12 @@ struct RecipesView: View {
                 }
                 ToolbarItem {
                     Button("Filter", systemImage: "line.3.horizontal.decrease") {
-                        isShowingFilter = true
+                        uiState.sheet = .filter
                     }
                 }
                 ToolbarItem {
                     Button("Add Recipe", systemImage: "plus") {
-                        isShowingCreate = true
+                        uiState.sheet = .create
                     }
                 }
             }
@@ -143,19 +136,21 @@ struct RecipesView: View {
         } detail: {
             Text("Select an item")
         }
-        .sheet(isPresented: $isShowingCreate) {
-            CreateEditRecipeView(parentModelContext: modelContext)
-        }
-        .sheet(isPresented: $isShowingFilter) {
-            RecipeFilterView(filterList: $filterList)
-                .presentationDetents([.fraction(0.33), .medium, .large])
-                .presentationDragIndicator(.hidden)
+        .sheet(isPresented: .asBool($uiState.sheet)) {
+            switch uiState.sheet {
+            case .none: EmptyView()
+            case .create:
+                CreateEditRecipeView(parentModelContext: modelContext)
+            case .filter:
+                RecipeFilterView(filterList: $uiState.filterList)
+                    .presentationDetents([.fraction(0.33), .medium, .large])
+                    .presentationDragIndicator(.hidden)
+            }
         }
         .sheet(item: $uiState.selected) { itm in
             RecipeView(recipe: itm)
                 .presentationDetents([.fraction(0.33), .medium, .large])
                 .presentationDragIndicator(.hidden)
-                .navigationTransition(.zoom(sourceID: "r-info", in: namespace))
         }
     }
 }

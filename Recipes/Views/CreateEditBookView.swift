@@ -92,3 +92,16 @@ struct CreateEditBookView: View {
         modelContext.trySave()
     }
 }
+
+
+struct CreateBookWrapperView: View {
+    @Environment(\.modelContext) private var modelContext
+
+    var body: some View {
+        CreateEditBookView(parentModelContext: modelContext)
+    }
+}
+
+#Preview(traits: .previewObjects) {
+    CreateBookWrapperView()
+}
