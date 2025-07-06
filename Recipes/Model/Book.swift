@@ -55,3 +55,7 @@ extension Book {
 
     static let defaultSymbolName = symbolNames[0]
 }
+
+extension Book: JModelObject {
+    var name: String { shortName }
+}

@@ -8,7 +8,7 @@
 import AppIntents
 import SwiftData
 
-// MARK: AppIntent - Recipe
+// MARK: AppEntity - Recipe
 
 struct RecipeEntity: AppEntity {
     static var typeDisplayRepresentation = TypeDisplayRepresentation("Recipe")
@@ -32,6 +32,38 @@ struct RecipeEntity: AppEntity {
         self.id = recipe.name
         self.name = recipe.name
         self.location = recipe.location
+    }
+}
+
+// MARK: AppEnum - Recipe.Kind
+
+enum RecipeKindAppEnum: String, AppEnum {
+    case meal
+    case sweet
+    case other
+
+    static var typeDisplayRepresentation = TypeDisplayRepresentation("Recipe Kind")
+
+    static var caseDisplayRepresentations: [RecipeKindAppEnum : DisplayRepresentation] = [
+        .meal: DisplayRepresentation(title: "Meal"),
+        .sweet: DisplayRepresentation(title: "Sweets"),
+        .other: DisplayRepresentation(title: "Other")
+    ]
+
+    init(_ kind: Recipe.Kind) {
+        switch kind {
+        case .meal: self = .meal
+        case .sweet: self = .sweet
+        case .other: self = .other
+        }
+    }
+
+    var asRecipeKind: Recipe.Kind {
+        switch self {
+        case .meal: return .meal
+        case .sweet: return .sweet
+        case .other: return .other
+        }
     }
 }
 
@@ -109,7 +141,70 @@ extension RecipePlanIntent {
     }
 }
 
-// MARK: Shortcuts - for science...
+// MARK: AppIntent - Recipe Create From URL Intent
+
+/// This is part of the 'share sheet' extension - rather than an actual share extension, which is all UIKit and
+/// rather incomprehensible, we use ShortCuts as the glue to trigger this thing.
+struct RecipeFromURLIntent: AppIntent {
+    static let title: LocalizedStringResource = "Create Recipe"
+
+    static let description = IntentDescription("Create a recipe from a web page.")
+
+    @Parameter(title: "URL", description: "The URL of the new recipe's web page.")
+    var url: String
+
+    @Parameter(title: "Name", description: "The name of the new recipe.")
+    var name: String
+
+    @Parameter(title: "Kind", description: "The kind of the new recipe.")
+    var kind: RecipeKindAppEnum
+
+    @Parameter(title: "Amount", description: "The number of servings or amount of food the recipe makes.")
+    var amount: String
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Add new \(\.$kind)-kind recipe called \(\.$name) from \(\.$url) that makes \(\.$amount).")
+    }
+
+    @MainActor
+    func perform() async throws -> some ReturnsValue<RecipeEntity> {
+        let modelContext = DatabaseLoader.intentsModelContext
+
+        let books = try Book.all(modelContext: modelContext)
+        var bestBook: Book? = nil
+        for book in books {
+            bestBook = book
+            if book.name.localizedCaseInsensitiveContains("internet") {
+                break
+            }
+        }
+
+        guard let bestBook else {
+            throw AppIntentError.Unrecoverable.entityNotFound
+        }
+
+        let servingsCount: UInt?
+        let quantity: String?
+        if amount.wholeMatch(of: /\d+/) != nil {
+            servingsCount = UInt(amount)
+            quantity = nil
+        } else {
+            servingsCount = nil
+            quantity = amount
+        }
+
+        let recipe = Recipe(name: name, book: bestBook, pageNumber: nil, url: url,
+                            kind: kind.asRecipeKind,
+                            servingsCount: servingsCount, quantity: quantity,
+                            isImported: false, notes: "SHARED")
+        modelContext.insert(recipe)
+        try? modelContext.save()
+
+        return .result(value: RecipeEntity(recipe))
+    }
+}
+
+// MARK: Shortcuts - for science & sharing
 
 final class AppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
@@ -128,6 +223,13 @@ final class AppShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Plan a recipe",
             systemImageName: "calendar.badge.minus"
+        )
+        AppShortcut(intent: RecipeFromURLIntent(),
+                    phrases: [
+                        "Create recipe in \(.applicationName)"
+                    ],
+                    shortTitle: "Create a recipe from a web page",
+                    systemImageName: "fork.knife.circle"
         )
     }
 }
