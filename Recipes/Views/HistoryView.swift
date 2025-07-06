@@ -27,6 +27,7 @@ struct HistoryView: View {
 }
 
 struct HistoryListView: View {
+    @Environment(\.modelContext) private var modelContext
     @Environment(UIState.self) var appUIState: UIState
 
     private let searchText: String
@@ -65,6 +66,11 @@ struct HistoryListView: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             appUIState.show(recipe: cooking.recipe)
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                cooking.doDeleteAction(modelContext: modelContext)
+                            }
                         }
                     }
                 }

@@ -22,7 +22,7 @@ struct BooksView: View {
 
     var body: some View {
         @Bindable var uiState = uiState
-        NavigationStack {//plitView {
+        NavigationStack {
             List {
                 ForEach(books) { book in
                     HStack {
@@ -64,8 +64,6 @@ struct BooksView: View {
                     }
                 }
             }
-//        } detail: {
-//            Text("Select an item")
         }
         .confirmationDialog(
             "Are you sure?",

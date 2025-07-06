@@ -55,3 +55,14 @@ extension Int {
         return "\(Calendar.current.monthSymbols[month - 1]) \(year)"
     }
 }
+
+// MARK: Verbs
+
+extension Cooking {
+    func doDeleteAction(modelContext: ModelContext) {
+        Log.log("Delete cooking for '\(recipe.name)' at \(timestamp)")
+        modelContext.updateModel { _ in
+            modelContext.delete(self)
+        }
+    }
+}
