@@ -64,5 +64,11 @@ extension Cooking {
         modelContext.updateModel { _ in
             modelContext.delete(self)
         }
+        // Do this in a separate transaction to get the correct cookings relation
+        if recipe.lastCookedTime == timestamp {
+            modelContext.updateModel { _ in
+                recipe.findLastCookedTime()
+            }
+        }
     }
 }

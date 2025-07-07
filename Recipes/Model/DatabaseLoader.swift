@@ -127,6 +127,11 @@ struct AppGroupImportExport {
             .appending(component: "Application Support", directoryHint: .isDirectory)
     }
 
+    // Dunno why but we don't get an 'Application Support' directory any more... Xcode 26 / iOS 26 thing?
+    private func initAppContainerPath() {
+        try! FileManager.default.createDirectory(at: appContainerURL, withIntermediateDirectories: true)
+    }
+
     private func matchingFiles(in url: URL) -> [URL] {
         var result: [URL] = []
         guard let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: [], options: .skipsSubdirectoryDescendants) else {
@@ -205,6 +210,7 @@ struct AppGroupImportExport {
     }
 
     func checkForReset() {
+        initAppContainerPath()
         let reset = testAndClearReset()
         Log.log("Import - reset required: \(reset)")
         guard reset else { return }

@@ -186,6 +186,16 @@ extension Recipe {
     func updateLastCookedTime() {
         lastCookedTime = .now
     }
+
+    func findLastCookedTime() {
+        lastCookedTime = nil
+        for cooking in cookings {
+            if lastCookedTime == nil || lastCookedTime! < cooking.timestamp {
+                lastCookedTime = cooking.timestamp
+            }
+        }
+        Log.log("Recalculated lastCookedTime for '\(name)' to \(lastCookedTime.map { $0.description } ?? "(nil)")")
+    }
 }
 
 // MARK: Cookings
