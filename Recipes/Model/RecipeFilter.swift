@@ -126,6 +126,47 @@ extension RecipeFilter {
     func pass(recipe: Recipe) -> Bool {
         passCore(recipe: recipe) == includeNotExclude
     }
+
+// Predicates - to execute the filter in the database.
+// Doesn't work because weirdly there is no "compound predicate" technology,
+// can't AND and NOT these things.
+//
+//    private var predicateCore: Predicate<Recipe> {
+//        switch kind {
+//        case .name:
+//            return #Predicate { $0.name.contains(regex) }
+//        case .book:
+//            return #Predicate { $0.book == book }
+//        case .url:
+//            return #Predicate { $0.url?.contains(regex) ?? false }
+//        case .kind:
+//            return #Predicate { $0.kind == recipeKind }
+//        case .servings:
+//            return #Predicate { recipe in
+//                recipe.servingsCount != nil &&
+//                ((exact && (recipe.servingsCount! == count)) ||
+//                 (!exact && (recipe.servingsCount! >= count)))
+//            }
+//        case .quantity:
+//            return #Predicate { $0.quantity?.contains(regex) ?? false }
+//        case .neverCooked:
+//            return #Predicate { $0.lastCookedTime == nil }
+//        case .importedCooked:
+//            return #Predicate { $0.lastCookedTime == Date.importedRecipe }
+//        case .cookedSince:
+//            return #Predicate { recipe in
+//                (recipe.lastCookedTime != nil) &&
+//                (recipe.lastCookedTime! >= date)
+//            }
+//        case .notes:
+//            return #Predicate { $0.notes.contains(regex) }
+//        }
+//    }
+//
+//    var predicate: Predicate<Recipe> {
+//        let p = predicateCore
+//        return includeNotExclude ? p : p.inverted
+//    }
 }
 
 extension RecipeFilterList {
