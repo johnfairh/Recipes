@@ -46,9 +46,11 @@ struct PlannedRecipes: TimelineEntry {
 
     /// Actually query swiftdata and build the list
     init(modelContext: ModelContext) {
-        var fetchDescriptor = FetchDescriptor(sortBy: [SortDescriptor(\Recipe.name, order: .forward)])
-        let plannedRawValue = Recipe.Lifecycle.planned.rawValue
-        fetchDescriptor.predicate = #Predicate { $0.lifecycleRaw == plannedRawValue }
+        var fetchDescriptor = FetchDescriptor(sortBy: [
+            SortDescriptor(\Recipe.sortOrder, order: .forward),
+            SortDescriptor(\Recipe.name, order: .forward)
+        ])
+        fetchDescriptor.predicate = Recipe.predicate(forLifecycle: .planned)
 
         if let recipeModels = try? modelContext.fetch(fetchDescriptor) {
             self.init(recipes: recipeModels.map(RecipeEntity.init))

@@ -37,6 +37,10 @@
 		02BA12262DE843C6008FC60F /* Version1Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021C93712D96CE8D00CC442F /* Version1Models.swift */; };
 		02BA123B2DE8E4E7008FC60F /* RecipeIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BA123A2DE8E4E1008FC60F /* RecipeIntents.swift */; };
 		02BA123C2DE8E4E7008FC60F /* RecipeIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BA123A2DE8E4E1008FC60F /* RecipeIntents.swift */; };
+		02BF27052E20228D0070A96E /* Version3Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BF27042E20228A0070A96E /* Version3Models.swift */; };
+		02BF27062E20228D0070A96E /* Version3Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BF27042E20228A0070A96E /* Version3Models.swift */; };
+		02BF27082E2023AE0070A96E /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BF27072E2023AC0070A96E /* Tag.swift */; };
+		02BF27092E2023AE0070A96E /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02BF27072E2023AC0070A96E /* Tag.swift */; };
 		02C1448D2D5B8569009C99CF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02C144862D5B8569009C99CF /* Preview Assets.xcassets */; };
 		02C1448E2D5B8569009C99CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02C1448A2D5B8569009C99CF /* Assets.xcassets */; };
 		02C1448F2D5B8569009C99CF /* RecipesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C144822D5B8569009C99CF /* RecipesApp.swift */; };
@@ -95,6 +99,8 @@
 		02BA120B2DE74FF0008FC60F /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		02BA121D2DE751FE008FC60F /* RecipesWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RecipesWidgetExtension.entitlements; sourceTree = "<group>"; };
 		02BA123A2DE8E4E1008FC60F /* RecipeIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeIntents.swift; sourceTree = "<group>"; };
+		02BF27042E20228A0070A96E /* Version3Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version3Models.swift; sourceTree = "<group>"; };
+		02BF27072E2023AC0070A96E /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		02C1445B2D5B7BAC009C99CF /* Recipes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recipes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02C144822D5B8569009C99CF /* RecipesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesApp.swift; sourceTree = "<group>"; };
 		02C144862D5B8569009C99CF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -208,11 +214,13 @@
 				02BA123A2DE8E4E1008FC60F /* RecipeIntents.swift */,
 				02C1449C2D5E355E009C99CF /* Book.swift */,
 				021C936F2D95C3CF00CC442F /* Cooking.swift */,
+				02BF27072E2023AC0070A96E /* Tag.swift */,
 				02C1449E2D5E3C8D009C99CF /* ModelUtils.swift */,
 				02C144922D5B8824009C99CF /* DatabaseLoader.swift */,
 				023D0A5A2D6DFEAC00AF8D3D /* Schemas.swift */,
 				021C93712D96CE8D00CC442F /* Version1Models.swift */,
 				02BA11DF2DE5CB2B008FC60F /* Version2Models.swift */,
+				02BF27042E20228A0070A96E /* Version3Models.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -366,8 +374,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02BF27092E2023AE0070A96E /* Tag.swift in Sources */,
 				02BA121E2DE8432E008FC60F /* DatabaseLoader.swift in Sources */,
 				024C8E5B2E0AA9C800D2857F /* RecipeFilter.swift in Sources */,
+				02BF27052E20228D0070A96E /* Version3Models.swift in Sources */,
 				02BA12212DE843C6008FC60F /* Version2Models.swift in Sources */,
 				02BA12222DE843C6008FC60F /* Book.swift in Sources */,
 				02BA12232DE843C6008FC60F /* Recipe.swift in Sources */,
@@ -391,6 +401,7 @@
 				02BA123B2DE8E4E7008FC60F /* RecipeIntents.swift in Sources */,
 				02BA11E62DE71754008FC60F /* UIUtils.swift in Sources */,
 				02BA11E02DE5CB2E008FC60F /* Version2Models.swift in Sources */,
+				02BF27062E20228D0070A96E /* Version3Models.swift in Sources */,
 				024869992E12EFDE00D7EC2B /* HistoryView.swift in Sources */,
 				02C1449D2D5E3561009C99CF /* Book.swift in Sources */,
 				02C1449F2D5E3C90009C99CF /* ModelUtils.swift in Sources */,
@@ -408,6 +419,7 @@
 				02C144932D5B8836009C99CF /* DatabaseLoader.swift in Sources */,
 				02C144992D5CADD6009C99CF /* BooksView.swift in Sources */,
 				02C1449B2D5CC015009C99CF /* LogView.swift in Sources */,
+				02BF27082E2023AE0070A96E /* Tag.swift in Sources */,
 				02C144A62D5E45D4009C99CF /* Recipe.swift in Sources */,
 				024C8E5D2E0AB76200D2857F /* RecipeFilterView.swift in Sources */,
 			);

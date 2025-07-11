@@ -8,9 +8,9 @@
 import SwiftData
 import Foundation
 
-/// Remove ``flagged``
-/// Add ``lifecycle``
-extension Version3Schema {
+/// Add tags array
+/// Add sortOrder for specific uses
+extension CurrentSchema {
     @Model
     class Recipe {
         /// Timestamp of this objects
@@ -42,7 +42,8 @@ extension Version3Schema {
         var notes: String
 
         /// Cooking history
-        @Relationship(deleteRule: .cascade, inverse: \Cooking.recipe) var cookings: [Cooking]
+        @Relationship(deleteRule: .cascade, inverse: \Cooking.recipe)
+        var cookings: [Cooking]
 
         enum Lifecycle: UInt8 {
             case planned = 1
@@ -52,6 +53,13 @@ extension Version3Schema {
 
         /// User importance - default value to satisfy SwiftData upgrade, can't be enum because SwiftData still can't sort by them
         var lifecycleRaw: UInt8 = Lifecycle.library.rawValue
+
+        /// Sort Order - for user-reordering within sections
+        var sortOrder: UInt = 0
+
+        /// Tags
+        @Relationship(deleteRule: .nullify, inverse: \Tag.recipes)
+        var tags: [Tag]
 
         init(name: String, book: Book, pageNumber: UInt?, url: String?, kind: Kind, servingsCount: UInt?, quantity: String?, isImported: Bool, notes: String) {
             self.creationTime = Date.now
@@ -65,7 +73,9 @@ extension Version3Schema {
             self.lastCookedTime = isImported ? .importedRecipe : nil
             self.notes = notes
             self.cookings = []
-            self.lifecycle = .library
+            self.lifecycleRaw = Lifecycle.library.rawValue
+            self.sortOrder = Recipe.noSortOrder
+            self.tags = []
         }
     }
 }
@@ -210,6 +220,32 @@ extension Recipe {
     }
 }
 
+// MARK: SortOrder
+
+extension Recipe {
+    static let noSortOrder = UInt(0)
+
+    func setSortOrderForLifecyle(modelContext: ModelContext) {
+        guard lifecycle == .planned else {
+            sortOrder = Recipe.noSortOrder
+            return
+        }
+
+        var fd = FetchDescriptor(
+            predicate: Recipe.predicate(forLifecycle: .planned),
+            sortBy: [.init(\.sortOrder, order: .reverse)]
+        )
+        fd.propertiesToFetch = [\.sortOrder]
+        fd.fetchLimit = 1
+        guard let recipes = try? modelContext.fetch(fd),
+        let recipe = recipes.first else {
+            sortOrder = 1
+            return
+        }
+        sortOrder = recipe.sortOrder + 1
+    }
+}
+
 // MARK: Lifecycle
 
 extension Recipe {
@@ -220,6 +256,11 @@ extension Recipe {
         set {
             lifecycleRaw = newValue.rawValue
         }
+    }
+
+    static func predicate(forLifecycle: Lifecycle) -> Predicate<Recipe> {
+        let raw = forLifecycle.rawValue
+        return #Predicate { $0.lifecycleRaw == raw }
     }
 }
 
@@ -283,6 +324,7 @@ extension Recipe {
             modelContext.insert(cooking)
             // implicit unplan/unpin
             lifecycle = .library
+            setSortOrderForLifecyle(modelContext: modelContext)
         }
     }
 
@@ -291,6 +333,7 @@ extension Recipe {
         Log.log("Updated recipe '\(name)' to \(next)")
         modelContext.updateModel { _ in
             lifecycle = next
+            setSortOrderForLifecyle(modelContext: modelContext)
         }
     }
 
@@ -299,6 +342,7 @@ extension Recipe {
         Log.log("Updated recipe '\(name)' to \(next)")
         modelContext.updateModel { _ in
             lifecycle = next
+            setSortOrderForLifecyle(modelContext: modelContext)
         }
     }
 

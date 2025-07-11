@@ -94,6 +94,7 @@ struct RecipesListView: View {
         }
         _recipes = SectionedQuery(\.lifecycle, filter: predicate, sort: [
             .init(\.lifecycleRaw, order: .forward),
+            .init(\.sortOrder, order: .forward),
             .init(\.name, order: .forward)
         ])
     }
@@ -161,6 +162,16 @@ struct RecipesListView: View {
                             Button("Delete", systemImage: "trash", role: .destructive) {
                                 recipe.doDeleteAction(modelContext: modelContext)
                             }
+                        }
+                        .moveDisabled(section.id != .planned)
+                    }
+                    .onMove { source, destination in
+                        Log.log("Move from \(source) to \(destination)")
+                        var items = section.elements
+                        items.move(fromOffsets: source, toOffset: destination)
+                        let indices = items.map(\.sortOrder).sorted()
+                        modelContext.updateModel { _ in
+                            zip(items, indices).forEach { $0.sortOrder = $1 }
                         }
                     }
                 }
