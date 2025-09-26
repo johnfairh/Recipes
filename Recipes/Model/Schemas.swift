@@ -105,7 +105,8 @@ enum MigrationPlan: SchemaMigrationPlan {
     static var schemas: [any VersionedSchema.Type] = [
         Version1Schema.self,
         Version2Schema.self,
-        Version3Schema.self
+        Version3Schema.self,
+        Version4Schema.self
     ]
 
     static var stages: [MigrationStage] = [
