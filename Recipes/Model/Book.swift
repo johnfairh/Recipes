@@ -49,7 +49,11 @@ extension Book: WithSortOrder {}
 extension Book {
     static let symbolNames = [
         "book.closed",
-        "brain.head.profile"
+        "brain.head.profile",
+        "network",
+        "book.pages",
+        "book",
+        "text.book.closed"
     ]
 
     static let defaultSymbolName = symbolNames[0]
