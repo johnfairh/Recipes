@@ -13,6 +13,10 @@ class Log {
         let id: UUID
         let date: Date
         let line: String
+
+        var timestamp: String {
+            date.formatted(date: .omitted, time: .shortened)
+        }
     }
 
     private(set) var lines: [Line]

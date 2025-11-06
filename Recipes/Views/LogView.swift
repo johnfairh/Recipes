@@ -25,12 +25,9 @@ struct LogContentView: View {
         ScrollView {
             LazyVStack(spacing: 8) {
                 ForEach(log.lines) { line in
-                    (Text(line.date, style: .time)
-                        .italic()
-                        .fontWeight(.light) +
-                     Text(" \(line.line)"))
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(try! AttributedString(markdown: "_\(line.timestamp)_ \(line.line)"))
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
