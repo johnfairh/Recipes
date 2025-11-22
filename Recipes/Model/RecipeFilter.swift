@@ -48,19 +48,11 @@ struct RecipeFilter: Identifiable {
         self.count = 1
         self.exact = true
     }
-
-    static var sample: RecipeFilter {
-        .init(kind: .name)
-    }
 }
 
 struct RecipeFilterList {
     var filters: [RecipeFilter]
     var allNotAny: Bool
-
-    static var sample: RecipeFilterList {
-        .init(filters: [.sample], allNotAny: true)
-    }
 
     static var empty: RecipeFilterList {
         .init(filters: [], allNotAny: true)

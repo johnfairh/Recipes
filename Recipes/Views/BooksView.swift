@@ -65,16 +65,6 @@ struct BooksView: View {
                 }
             }
         }
-        .confirmationDialog(
-            "Are you sure?",
-            isPresented: $isCheckingReset
-        ) {
-            Button("Reset all data and quit Recipes?", role: .destructive) {
-                DatabaseLoader.importExport.reset()
-                try? modelContext.save()
-                exit(0) // I guess
-            }
-        }
         .sheet(isPresented: .asBool($uiState.sheet)) {
             switch uiState.sheet {
             case .none:
@@ -108,6 +98,13 @@ struct BooksView: View {
                 }
             } label: {
                 Label("Dev", systemImage: "gear")
+            }
+            .confirmationDialog("Reset", isPresented: $isCheckingReset) {
+                Button("Reset all data and quit Recipes", role: .destructive) {
+                    DatabaseLoader.importExport.reset()
+                    try? modelContext.save()
+                    exit(0) // I guess
+                }
             }
         }
     }

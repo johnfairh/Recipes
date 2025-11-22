@@ -71,91 +71,99 @@ struct RecipeFilterView: View {
     // Current filters being used in the parent listview
     @Binding var savedFilterList: RecipeFilterList?
     // Filters we are modelling in this view's UI
-    @State var filterList: RecipeFilterList = .sample
+    @State var filterList: RecipeFilterList = .empty
 
     init(filterList: Binding<RecipeFilterList?>) {
         self._savedFilterList = filterList
     }
 
     var body: some View {
-        VStack {
-            HStack(alignment: .center) {
-                Text("Filter")
-                    .font(.title)
-                    .bold()
+        NavigationStack {
+            VStack {
+                HStack {
+                    Menu {
+                        Button("Match all") {
+                            filterList.allNotAny = true
+                        }
+                        Button("Match any") {
+                            filterList.allNotAny = false
+                        }
+                    } label: {
+                        Text(filterList.allNotAny ? "Match all:" : "Match any:")
+                    }
+                    Spacer()
+                }
+                .padding([.bottom, .top], 4)
+
+                ForEach($filterList.filters) { $filter in
+                    HStack(alignment: .firstTextBaseline) {
+                        Menu {
+                            Button("Include", systemImage: "text.badge.plus") {
+                                filter.includeNotExclude = true
+                            }
+                            Button("Exclude", systemImage: "text.badge.minus") {
+                                filter.includeNotExclude = false
+                            }
+                        } label: {
+                            Image(systemName: filter.includeNotExclude ? "text.badge.plus" : "text.badge.minus")
+                        }
+
+                        Text(filter.kind.label)
+                        RecipeFilterItemView(filter: $filter, books: books)
+
+                        Spacer()
+                        Button(role: .destructive) {
+                            let idx = filterList.filters.firstIndex(where: { $0.id == filter.id})!
+                            filterList.filters.remove(at: idx)
+                        } label: {
+                            Image(systemName: "minus.circle")
+                        }
+                    }
+                }
+
+                HStack {
+                    Spacer()
+                    Menu {
+                        ForEach(RecipeFilter.Kind.allCases) { kind in
+                            Button(kind.label) {
+                                filterList.filters.append(RecipeFilter(kind: kind))
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "plus.circle")
+                    }
+                }.padding(.top, 4)
+
                 Spacer()
-                HStack(alignment: .firstTextBaseline) {
-                    Button("", systemImage: "trash", role: .destructive) {
+            }
+            .padding()
+            .onAppear() {
+                if let currentFilters = savedFilterList {
+                    filterList = currentFilters
+                }
+            }
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("Filter")
+                        .font(.title)
+                        .fontWeight(.bold)
+                }
+                ToolbarItem(placement: .destructiveAction) {
+                    Button("Clear", systemImage: "trash", role: .destructive) {
                         filterList = .empty
                     }
-                    Button("", systemImage: "checkmark.circle") {
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Apply", systemImage: "checkmark") {
                         apply()
                     }
                 }
-            }
-            .font(.title)
-            .padding(.top, 6)
-
-            HStack {
-                Menu {
-                    Button("Match all") {
-                        filterList.allNotAny = true
-                    }
-                    Button("Match any") {
-                        filterList.allNotAny = false
-                    }
-                } label: {
-                    Text(filterList.allNotAny ? "Match all:" : "Match any:")
-                }
-                Spacer()
-            }
-            .padding([.bottom, .top], 4)
-
-            ForEach($filterList.filters) { $filter in
-                HStack(alignment: .firstTextBaseline) {
-                    Menu {
-                        Button("Include", systemImage: "text.badge.plus") {
-                            filter.includeNotExclude = true
-                        }
-                        Button("Exclude", systemImage: "text.badge.minus") {
-                            filter.includeNotExclude = false
-                        }
-                    } label: {
-                        Image(systemName: filter.includeNotExclude ? "text.badge.plus" : "text.badge.minus")
-                    }
-
-                    Text(filter.kind.label)
-                    RecipeFilterItemView(filter: $filter, books: books)
-
-                    Spacer()
-                    Button(role: .destructive) {
-                        let idx = filterList.filters.firstIndex(where: { $0.id == filter.id})!
-                        filterList.filters.remove(at: idx)
-                    } label: {
-                        Image(systemName: "minus.circle")
-                    }
-                }
-            }
-
-            HStack {
-                Spacer()
-                Menu {
-                    ForEach(RecipeFilter.Kind.allCases) { kind in
-                        Button(kind.label) {
-                            filterList.filters.append(RecipeFilter(kind: kind))
-                        }
-                    }
-                } label: {
-                    Image(systemName: "plus.circle")
-                }
-            }.padding(.top, 4)
-
-            Spacer()
-        }
-        .padding()
-        .onAppear() {
-            if let currentFilters = savedFilterList {
-                filterList = currentFilters
             }
         }
     }

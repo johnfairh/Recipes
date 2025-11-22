@@ -19,7 +19,7 @@ struct CreateEditBookView: View {
 
     let isCreate: Bool
     var sheetTitle: String {
-        isCreate ? "Add Book" : "Edit Book"
+        isCreate ? "New Book" : "Edit Book"
     }
 
     init(parentModelContext: ModelContext, book: Book? = nil) {
@@ -57,17 +57,16 @@ struct CreateEditBookView: View {
             .navigationTitle(sheetTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark", role: .cancel) {
                         dismiss()
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save", systemImage: "checkmark", role: .confirm) {
                         saveBook()
                         dismiss()
                     }
-                    .bold()
                     .disabled(!canSave)
                 }
             }

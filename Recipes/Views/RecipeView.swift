@@ -28,6 +28,11 @@ struct RecipeView: View {
                     .foregroundStyle(Color.accentColor)
                     .frame(minWidth: 32, maxWidth: 32)
                 Text(recipe.name).font(.title)
+                Spacer()
+                Button("", systemImage: "xmark", role: .close) {
+                    dismiss()
+                }
+                .buttonStyle(.plain) // stop it from being green
             }.padding(.bottom, 2)
             VStack(alignment: .leading) {
                 if let firstMade = recipe.firstCookedTextLong {

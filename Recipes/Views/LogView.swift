@@ -7,18 +7,24 @@
 import SwiftUI
 
 struct LogView: View {
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         NavigationStack {
             LogContentView()
                 .navigationTitle("Log")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    Button(role: .close) {
+                        dismiss()
+                    }
+                }
                 .padding()
         }
     }
 }
 
 struct LogContentView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(Log.self) private var log
 
     var body: some View {
@@ -31,9 +37,9 @@ struct LogContentView: View {
                 }
             }
         }
-
-        Button("OK") {
-            dismiss()
-        }
     }
+}
+
+#Preview(traits: .previewObjects) {
+    LogView()
 }

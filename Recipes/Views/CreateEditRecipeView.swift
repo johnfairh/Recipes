@@ -21,7 +21,7 @@ struct CreateEditRecipeView: View {
 
     let isCreate: Bool
     var sheetTitle: String {
-        isCreate ? "Add Recipe" : "Edit Recipe"
+        isCreate ? "New Recipe" : "Edit Recipe"
     }
 
     init(parentModelContext: ModelContext, recipe: Recipe? = nil) {
@@ -98,7 +98,7 @@ struct CreateEditRecipeView: View {
                     Section {
                         Toggle("Brand new recipe", isOn: $isBrandNew)
                     } header: {
-                        Text("SPECIAL")
+                        Text("Special")
                     } footer: {
                         Text("Turn this off if you're adding a recipe that has been cooked before.")
                     }
@@ -111,13 +111,13 @@ struct CreateEditRecipeView: View {
             .navigationTitle(sheetTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark", role: .cancel) {
                         dismiss()
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save", systemImage: "checkmark", role: .confirm) {
                         saveRecipe()
                         dismiss()
                     }
@@ -151,4 +151,16 @@ struct CreateEditRecipeView: View {
         }
         modelContext.trySave()
     }
+}
+
+struct CreateRecipeWrapperView: View {
+    @Environment(\.modelContext) private var modelContext
+
+    var body: some View {
+        CreateEditRecipeView(parentModelContext: modelContext)
+    }
+}
+
+#Preview(traits: .previewObjects) {
+    CreateRecipeWrapperView()
 }
