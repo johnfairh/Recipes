@@ -16,6 +16,7 @@ class UIState {
         case recipes = "Recipes"
         case history = "History"
         case books = "Books"
+        case ai = "AI"
     }
 
     var selectedTab: TabValue = .recipes
@@ -65,10 +66,20 @@ class UIState {
     }
     let booksTab = BooksTab()
 
+    // MARK: AI Tab
+
+    @Observable
+    class AITab {
+        var questionText = ""
+        var responseText = ""
+        var responding = false
+        init() {}
+    }
+    let aiTab = AITab()
+
     init() {
     }
 }
-
 
 // MARK: Navigation helpers
 

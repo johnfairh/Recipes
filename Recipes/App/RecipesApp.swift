@@ -26,6 +26,7 @@ extension UIState.TabValue {
         case .recipes: return "fork.knife.circle"
         case .history: return "clock.fill"
         case .books: return "books.vertical.circle"
+        case .ai: return "apple.intelligence"
         }
     }
 
@@ -35,6 +36,7 @@ extension UIState.TabValue {
         case .recipes: RecipesView()
         case .history: HistoryView()
         case .books: BooksView()
+        case .ai: AIView()
         }
     }
 }
