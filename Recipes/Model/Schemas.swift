@@ -27,7 +27,7 @@ enum Version2Schema: VersionedSchema {
 
     static var versionIdentifier = Schema.Version(0, 0, 2)
 
-    static func didMigrate(modelContext: ModelContext) throws {
+    @Sendable static func didMigrate(modelContext: ModelContext) throws {
         let recipes = try modelContext.fetch(FetchDescriptor<Version2Schema.Recipe>())
 
         Log.log("Schema Version Migration 1->2")
@@ -54,7 +54,7 @@ enum Version3Schema: VersionedSchema {
 
     static var versionIdentifier = Schema.Version(0, 0, 3)
 
-    static func didMigrate(modelContext: ModelContext) throws {
+    @Sendable static func didMigrate(modelContext: ModelContext) throws {
         Log.log("Schema Version Migration 2->3")
     }
 }
@@ -71,7 +71,7 @@ enum Version4Schema: VersionedSchema {
 
     /// Introduces sortOrder for 'planned' recipes.
     /// Replicate the current order by doing the alphasort query & labelling them
-    static func didMigrate(modelContext: ModelContext) throws {
+    @Sendable static func didMigrate(modelContext: ModelContext) throws {
         let fd = FetchDescriptor(
             predicate: Version4Schema.Recipe.predicate(forLifecycle: .planned),
             sortBy: [.init(\Version4Schema.Recipe.name)]
@@ -130,3 +130,4 @@ enum MigrationPlan: SchemaMigrationPlan {
 
     ]
 }
+

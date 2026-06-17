@@ -196,7 +196,7 @@ struct RecipeFromURLIntent: AppIntent {
         let recipe = Recipe(name: name, book: bestBook, pageNumber: nil, url: url,
                             kind: kind.asRecipeKind,
                             servingsCount: servingsCount, quantity: quantity,
-                            isImported: false, notes: "SHARED")
+                            isImported: false, notes: "")
         modelContext.insert(recipe)
         try? modelContext.save()
 
