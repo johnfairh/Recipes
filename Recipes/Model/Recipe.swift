@@ -54,6 +54,9 @@ extension CurrentSchema {
         /// User importance - default value to satisfy SwiftData upgrade, can't be enum because SwiftData still can't sort by them
         var lifecycleRaw: UInt8 = Lifecycle.library.rawValue
 
+        /// For Swift Data sectioning
+        var lifecycleString: String = Lifecycle.library.rawValue.description
+
         /// Sort Order - for user-reordering within sections
         var sortOrder: UInt = 0
 
@@ -74,6 +77,7 @@ extension CurrentSchema {
             self.notes = notes
             self.cookings = []
             self.lifecycleRaw = Lifecycle.library.rawValue
+            self.lifecycleString = Lifecycle.library.rawValue.description
             self.sortOrder = Recipe.noSortOrder
             self.tags = []
         }
@@ -255,6 +259,7 @@ extension Recipe {
         }
         set {
             lifecycleRaw = newValue.rawValue
+            lifecycleString = lifecycleRaw.description
         }
     }
 

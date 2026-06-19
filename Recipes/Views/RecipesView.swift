@@ -5,6 +5,15 @@
 //  Created by John on 12/02/2025.
 //
 
+
+/// IOS27 experiments
+///
+/// SectionedBy Query -- might work eventually.
+/// 1) Seems to need a string for the section in the data model
+/// 2) Can't sort sections
+/// 3) Can't use different item sorts in sections
+/// 4) Really slow to update when changing section - no animation either
+
 import UIKit
 import SwiftUI
 import SwiftData
@@ -82,8 +91,8 @@ struct RecipesListView: View {
 
     private let searchText: String
 
-    @SectionedQuery
-    private var recipes: SectionedResults<Recipe.Lifecycle, Recipe>
+    @Query
+    private var recipes: [Recipe]
 
     init(searchText: String) {
         self.searchText = searchText
@@ -92,29 +101,33 @@ struct RecipesListView: View {
             recipe.name.localizedStandardContains(searchText) ||
             recipe.notes.localizedStandardContains(searchText)
         }
-        _recipes = SectionedQuery(\.lifecycle, filter: predicate, sort: [
-            .init(\.lifecycleRaw, order: .forward),
-            .init(\.sortOrder, order: .forward),
-            .init(\.name, order: .forward)
-        ])
+        _recipes = Query(
+            filter: predicate,
+            sort: [
+                .init(\.lifecycleRaw, order: .forward),
+                .init(\.sortOrder, order: .forward),
+                .init(\.name, order: .forward)
+            ],
+            sectionBy: \.lifecycleString
+        )
     }
 
-    var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
-        uiState.recipesTab.filterList.map { fl in recipes.filter { fl.pass(recipe: $0) } } ?? recipes
-    }
+//    var filteredRecipes: SectionedResults<Recipe.Lifecycle, Recipe> {
+//        uiState.recipesTab.filterList.map { fl in recipes.filter { fl.pass(recipe: $0) } } ?? recipes
+//    }
 
     var body: some View {
         @Bindable var uiState = uiState.recipesTab
-        if !searchText.isEmpty && filteredRecipes.isEmpty {
+        if !searchText.isEmpty && recipes.isEmpty {
             ContentUnavailableView.search(text: searchText)
-        } else if uiState.filterList != nil && filteredRecipes.isEmpty {
+        } else if uiState.filterList != nil && recipes.isEmpty {
             ContentUnavailableView(
                 "No Filtered Results",
                 systemImage: "line.3.horizontal.decrease",
                 description: Text("Clear or edit the filters"))
         } else {
-            ForEach(filteredRecipes) { section in
-                Section(section.id.name) {
+            ForEach(_recipes.sections) { section in
+                Section(section.id) { // XXX name
                     ForEach(section) { recipe in
                         HStack {
                             Image(systemName: recipe.symbolName)
@@ -163,11 +176,12 @@ struct RecipesListView: View {
                                 recipe.doDeleteAction(modelContext: modelContext)
                             }
                         }
-                        .moveDisabled(section.id != .planned)
+                        .moveDisabled(section.id != "1")
                     }
                     .onMove { source, destination in
                         Log.log("Move from \(source) to \(destination)")
-                        var items = section.elements
+
+                        var items: [Recipe] = Array(section)
                         items.move(fromOffsets: source, toOffset: destination)
                         let indices = items.map(\.sortOrder).sorted()
                         modelContext.updateModel { _ in
