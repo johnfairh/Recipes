@@ -10,8 +10,9 @@ import SwiftUI
 import SwiftData
 
 extension RecipeEntity {
-    init(name: String, location: String, fakeUuid: String) {
+    init(name: String, kind: Recipe.Kind, location: String, fakeUuid: String) {
         self.id = fakeUuid
+        self.kind = kind
         self.name = name
         self.location = location
     }
@@ -32,9 +33,9 @@ struct PlannedRecipes: TimelineEntry {
     /// Dummy data used in "the widget gallery"
     static var placeholder: PlannedRecipes {
         let recipes = [
-            RecipeEntity(name: "Chilli con Carne", location: "Purple book, page 94", fakeUuid: "0"),
-            RecipeEntity(name: "Best Chocolate Brownies", location: "Smitten Kitchen #1, page 108", fakeUuid: "1"),
-            RecipeEntity(name: "Worst Chocolate Brownies", location: "Smitten Kitchen #1, page 109", fakeUuid: "2")
+            RecipeEntity(name: "Chilli con Carne", kind: .meal, location: "Purple book, page 94", fakeUuid: "0"),
+            RecipeEntity(name: "Best Chocolate Brownies", kind: .sweet, location: "Smitten Kitchen #1, page 108", fakeUuid: "1"),
+            RecipeEntity(name: "Worst Chocolate Brownies", kind: .sweet, location: "Smitten Kitchen #1, page 109", fakeUuid: "2")
         ]
         return PlannedRecipes(recipes: recipes)
     }

@@ -28,6 +28,14 @@ extension CurrentSchema {
             case meal = 1
             case sweet = 2
             case other = 3
+
+            var systemImageName: String {
+                switch self {
+                case .meal: return "carrot"
+                case .sweet: return "birthday.cake"
+                case .other: return "popcorn"
+                }
+            }
         }
 
         /// Properties
@@ -111,12 +119,8 @@ extension Recipe {
     }
 
     /// System image name
-    var symbolName: String {
-        switch kind {
-        case .meal: return "carrot"
-        case .sweet: return "birthday.cake"
-        case .other: return "popcorn"
-        }
+    var systemImageName: String {
+        kind.systemImageName
     }
 }
 

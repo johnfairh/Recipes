@@ -53,6 +53,7 @@
 		02C1449F2D5E3C90009C99CF /* ModelUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C1449E2D5E3C8D009C99CF /* ModelUtils.swift */; };
 		02C144A42D5E4424009C99CF /* DefaultObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C144A22D5E42A2009C99CF /* DefaultObjects.swift */; };
 		02C144A62D5E45D4009C99CF /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C144A52D5E45D1009C99CF /* Recipe.swift */; };
+		02E1E6DA2FEBEEE200DB0261 /* RecipeShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E1E6D92FEBEEDB00DB0261 /* RecipeShortcuts.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +116,7 @@
 		02C1449E2D5E3C8D009C99CF /* ModelUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelUtils.swift; sourceTree = "<group>"; };
 		02C144A22D5E42A2009C99CF /* DefaultObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultObjects.swift; sourceTree = "<group>"; };
 		02C144A52D5E45D1009C99CF /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		02E1E6D92FEBEEDB00DB0261 /* RecipeShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeShortcuts.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -212,6 +214,7 @@
 				024C8E592E0AA9C500D2857F /* RecipeFilter.swift */,
 				02C144A52D5E45D1009C99CF /* Recipe.swift */,
 				02BA123A2DE8E4E1008FC60F /* RecipeIntents.swift */,
+				02E1E6D92FEBEEDB00DB0261 /* RecipeShortcuts.swift */,
 				02C1449C2D5E355E009C99CF /* Book.swift */,
 				021C936F2D95C3CF00CC442F /* Cooking.swift */,
 				02BF27072E2023AC0070A96E /* Tag.swift */,
@@ -402,6 +405,7 @@
 				02BA11E62DE71754008FC60F /* UIUtils.swift in Sources */,
 				02BA11E02DE5CB2E008FC60F /* Version2Models.swift in Sources */,
 				02BF27062E20228D0070A96E /* Version3Models.swift in Sources */,
+				02E1E6DA2FEBEEE200DB0261 /* RecipeShortcuts.swift in Sources */,
 				024869992E12EFDE00D7EC2B /* HistoryView.swift in Sources */,
 				02C1449D2D5E3561009C99CF /* Book.swift in Sources */,
 				02C1449F2D5E3C90009C99CF /* ModelUtils.swift in Sources */,

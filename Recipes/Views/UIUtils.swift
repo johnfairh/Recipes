@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppIntents
 
 extension Binding {
     /// Manage a `String?` model property with a `String` in the UI - write `nil` for an empty string
@@ -25,6 +26,12 @@ extension Binding {
     }
 }
 
+extension AppEntity {
+    static func identifier(_ id: ID) -> EntityIdentifier {
+        EntityIdentifier(for: Self.self, identifier: id)
+    }
+}
+
 extension View {
     /// Applies the given transform if the given condition evaluates to `true`.
     /// - Parameters:
@@ -37,6 +44,10 @@ extension View {
         } else {
             self
         }
+    }
+
+    func recipeEntityIdentifier(_ recipe: Recipe) -> some View {
+        appEntityIdentifier(RecipeEntity.identifier(recipe.name))
     }
 }
 

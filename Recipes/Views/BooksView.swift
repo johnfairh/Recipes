@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import AppIntents
 
 struct BooksView: View {
     @Environment(\.modelContext) private var modelContext
@@ -24,7 +25,7 @@ struct BooksView: View {
         @Bindable var uiState = uiState
         NavigationStack {
             List {
-                ForEach(books) { book in
+                ForEach(books, id: \.shortName) { book in
                     HStack {
                         Image(systemName: book.symbolName)
                             .imageScale(.large)
@@ -50,6 +51,11 @@ struct BooksView: View {
                 }
                 .onDelete(perform: deleteItems)
                 .onMove(perform: moveItems)
+                .appEntityIdentifier(forSelectionType: String.self) { id in
+//                    EntityIdentifier(for: BookEntity.self, identifier: id) XXX TODO
+                    nil
+                }
+
             }
             .navigationTitle("Books")
 #if os(macOS)

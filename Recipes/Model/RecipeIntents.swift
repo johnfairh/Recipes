@@ -15,8 +15,15 @@ struct RecipeEntity: AppEntity {
 
     static var defaultQuery = RecipeEntityQuery()
 
-    /// Recipe object unique ID: we use the name
+    /// Recipe object unique ID: we use the name.
+    ///
+    /// This is a kludge because the name is not unique.  SwiftData has an `id` but it is a weird
+    /// compound opaque thing that can only be JSONified to get something.
+    ///
+    /// The work needed is to add a new UUID field to each object (lesson learnt, put this in from
+    /// the start next time) and rejigger everything to use it.
     let id: String
+    let kind: Recipe.Kind
 
     @Property(title: "Recipe Name")
     var name: String
@@ -25,11 +32,14 @@ struct RecipeEntity: AppEntity {
     var location: String
 
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name) (\(location))")
+        DisplayRepresentation(title: "\(name)",
+                              subtitle: "\(location)",
+                              image: .init(systemName: kind.systemImageName))
     }
 
     init(_ recipe: Recipe) {
         self.id = recipe.name
+        self.kind = recipe.kind
         self.name = recipe.name
         self.location = recipe.location
     }
@@ -201,35 +211,5 @@ struct RecipeFromURLIntent: AppIntent {
         try? modelContext.save()
 
         return .result(value: RecipeEntity(recipe))
-    }
-}
-
-// MARK: Shortcuts - for science & sharing
-
-final class AppShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
-        AppShortcut(
-            intent: RecipeCookIntent(),
-            phrases: [
-                "Cook in \(.applicationName)"
-            ],
-            shortTitle: "Cook a recipe",
-            systemImageName: "fork.knife"
-        )
-        AppShortcut(
-            intent: RecipePlanIntent(),
-            phrases: [
-                "Plan in \(.applicationName)"
-            ],
-            shortTitle: "Plan a recipe",
-            systemImageName: "calendar.badge.minus"
-        )
-        AppShortcut(intent: RecipeFromURLIntent(),
-                    phrases: [
-                        "Create recipe in \(.applicationName)"
-                    ],
-                    shortTitle: "Create a recipe from a web page",
-                    systemImageName: "fork.knife.circle"
-        )
     }
 }

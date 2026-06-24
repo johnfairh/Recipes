@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import SwiftData
+import AppIntents
 
 struct RecipesView: View {
     @Environment(\.modelContext) private var modelContext
@@ -115,9 +116,9 @@ struct RecipesListView: View {
         } else {
             ForEach(filteredRecipes) { section in
                 Section(section.id.name) {
-                    ForEach(section) { recipe in
+                    ForEach(section, id: \.name) { recipe in
                         HStack {
-                            Image(systemName: recipe.symbolName)
+                            Image(systemName: recipe.systemImageName)
                                 .imageScale(.large)
                                 .foregroundStyle(Color.accentColor)
                                 .frame(minWidth: 32, maxWidth: 32)
@@ -173,6 +174,9 @@ struct RecipesListView: View {
                         modelContext.updateModel { _ in
                             zip(items, indices).forEach { $0.sortOrder = $1 }
                         }
+                    }
+                    .appEntityIdentifier(forSelectionType: String.self) { id in
+                        RecipeEntity.identifier(id)
                     }
                 }
             }

@@ -52,7 +52,7 @@ struct HistoryListView: View {
                 Section(section.id.decodeMonthCode) {
                     ForEach(section) { cooking in
                         HStack {
-                            Image(systemName: cooking.recipe.symbolName)
+                            Image(systemName: cooking.recipe.systemImageName)
                                 .imageScale(.large)
                                 .foregroundStyle(Color.accentColor)
                                 .frame(minWidth: 32, maxWidth: 32)

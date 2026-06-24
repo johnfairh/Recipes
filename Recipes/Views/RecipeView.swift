@@ -23,7 +23,7 @@ struct RecipeView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Image(systemName: recipe.symbolName)
+                Image(systemName: recipe.systemImageName)
                     .imageScale(.large)
                     .foregroundStyle(Color.accentColor)
                     .frame(minWidth: 32, maxWidth: 32)
@@ -85,6 +85,7 @@ struct RecipeView: View {
         .sheet(isPresented: $isShowingEdit) {
             CreateEditRecipeView(parentModelContext: modelContext, recipe: recipe)
         }
+        .recipeEntityIdentifier(recipe)
         Spacer()
     }
 }
