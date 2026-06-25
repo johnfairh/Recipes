@@ -7,6 +7,7 @@
 
 import AppIntents
 import SwiftData
+import CoreSpotlight
 
 // MARK: AppEntity - Recipe
 
@@ -89,7 +90,7 @@ enum RecipeKindAppEnum: String, AppEnum {
 
 // MARK: AppIntent - Recipe Queries
 
-struct RecipeEntityQuery: EnumerableEntityQuery {
+struct RecipeEntityQuery: EnumerableEntityQuery, IndexedEntityQuery {
     @MainActor
     func entities(for identifiers: [RecipeEntity.ID]) async throws -> [RecipeEntity] {
         try Recipe.find(names: identifiers, modelContext: DatabaseLoader.intentsModelContext)
@@ -105,6 +106,20 @@ struct RecipeEntityQuery: EnumerableEntityQuery {
     func allEntities() async throws -> [RecipeEntity] {
         try Recipe.all(modelContext: DatabaseLoader.intentsModelContext)
             .map(RecipeEntity.init)
+    }
+
+    @available(iOS 27.0, *)
+    @MainActor
+    func reindexAllEntities(indexDescription: CSSearchableIndexDescription) async throws {
+        let recipes = try await allEntities()
+        try await SpotlightIndex.reindex(recipes)
+    }
+
+    @available(iOS 27.0, *)
+    @MainActor
+    func reindexEntities(for identifiers: [String], indexDescription: CSSearchableIndexDescription) async throws {
+        let recipes = try await entities(for: identifiers)
+        try await SpotlightIndex.reindex(recipes)
     }
 }
 
