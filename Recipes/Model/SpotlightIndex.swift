@@ -65,6 +65,21 @@ final class SpotlightIndex : NSObject, CSSearchableIndexDelegate {
         delete(entityType: BookEntity.self, id: BookEntity(book).id)
     }
 
+    /// indexAll - used once on upgrade from software that does not support Spotlight indexing.
+    @MainActor
+    static func indexAll() async {
+        let modelContext = DatabaseLoader.modelContainer.mainContext
+        do {
+            let recipes = try Recipe.all(modelContext: modelContext).map(RecipeEntity.init)
+            try await shared.index.indexAppEntities(recipes)
+
+            let books = try Book.all(modelContext: modelContext).map(BookEntity.init)
+            try await shared.index.indexAppEntities(books)
+        } catch {
+            Log.log("CS::indexAll: \(error)")
+        }
+    }
+
     // For xOS27+, reindex is managed via the intents path
     // For earlier, we have to reindex via the delegate but everything else goes through the intents.
     @MainActor

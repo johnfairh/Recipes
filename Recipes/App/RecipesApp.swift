@@ -10,9 +10,22 @@ import SwiftData
 
 @main
 struct RecipesApp: App {
+    @AppStorage("spotlight_indexed")
+    var indexed: Bool?
+
     var body: some Scene {
         WindowGroup {
             AppTabView()
+                .task { @MainActor in
+                    if let indexed, indexed {
+                        Log.log("CS startup: already indexed")
+                        return
+                    }
+                    Log.log("CS startup: indexing")
+                    await SpotlightIndex.indexAll()
+                    Log.log("CS startup: indexing done")
+                    indexed = true
+                }
         }
         .modelContainer(DatabaseLoader.modelContainer)
         .environment(Log.shared)

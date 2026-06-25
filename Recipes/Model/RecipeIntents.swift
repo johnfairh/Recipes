@@ -319,3 +319,23 @@ struct OpenRecipeIntent: OpenIntent {
         return .result()
     }
 }
+
+// This doesn't even compile...
+//
+// Wait for iOS27 to be tbe minimum
+//
+//@AppIntent(schema: .system.searchInApp)
+//struct SystemSearchInAppIntent: ShowInAppSearchResultsIntent {
+//    @available(anyAppleOS 27, *)
+//    static var searchScopes: [StringSearchScope] = [.general]
+//
+//    @available(anyAppleOS 27, *)
+//    @Parameter(title: "Search")
+//    var criteria: StringSearchCriteria
+//
+//    @available(anyAppleOS 27, *)
+//    @MainActor
+//    func perform() async throws -> some IntentResult {
+//        .result()
+//    }
+//}
