@@ -27,7 +27,7 @@ struct BooksView: View {
             List {
                 ForEach(books, id: \.shortName) { book in
                     HStack {
-                        Image(systemName: book.symbolName)
+                        Image(systemName: book.systemImageName)
                             .imageScale(.large)
                             .foregroundStyle(Color.accentColor)
                             .frame(minWidth: 32, maxWidth: 32)
@@ -52,8 +52,7 @@ struct BooksView: View {
                 .onDelete(perform: deleteItems)
                 .onMove(perform: moveItems)
                 .appEntityIdentifier(forSelectionType: String.self) { id in
-//                    EntityIdentifier(for: BookEntity.self, identifier: id) XXX TODO
-                    nil
+                    BookEntity.identifier(id)
                 }
 
             }
@@ -118,12 +117,9 @@ struct BooksView: View {
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                let book = books[index]
-                Log.log("Delete book \(book.shortName)")
-                modelContext.delete(book)
+                books[index].doDeleteAction(modelContext: modelContext)
             }
         }
-        modelContext.trySave()
     }
 
     // Yikes: rewrite the sort order for all the objects.

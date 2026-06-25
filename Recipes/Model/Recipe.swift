@@ -88,7 +88,11 @@ extension CurrentSchema {
     }
 }
 
-extension Recipe: JModelObject {}
+extension Recipe: JModelObject {
+    static func nameMatchPredicate(_ names: [String]) -> Predicate<Recipe> {
+        #Predicate { names.contains($0.name) }
+    }
+}
 
 // MARK: Utilities
 

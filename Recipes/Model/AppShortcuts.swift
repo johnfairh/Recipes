@@ -40,5 +40,13 @@ final class AppShortcuts: AppShortcutsProvider {
                     shortTitle: "Create a recipe from a web page",
                     systemImageName: "fork.knife.circle"
         )
+
+        AppShortcut(intent: BookDeleteIntent(),
+                    phrases: [
+                        "Delete recipe book in \(.applicationName)"
+                    ],
+                    shortTitle: "Delete a recipe book",
+                    systemImageName: "book.fill"
+        )
     }
 }

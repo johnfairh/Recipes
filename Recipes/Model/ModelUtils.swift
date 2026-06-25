@@ -36,14 +36,21 @@ extension Book {
 // MARK: ModelObject - fetchability
 
 protocol JModelObject: PersistentModel {
-    var name: String { get }
+    /// Defaults to 'name'
+    static func nameMatchPredicate(_ names: [String]) -> Predicate<Self>
+}
+
+extension JModelObject {
+    static func nameMatchPredicate(_ name: String) -> Predicate<Self> {
+        nameMatchPredicate([name])
+    }
 }
 
 extension JModelObject {
     /// Find an object by name in the DB.  Nil if not found; throws on DB error.
     static func find(name: String, modelContext: ModelContext) throws -> Self? {
         var fetchDescriptor = FetchDescriptor<Self>(
-            predicate: #Predicate { $0.name == name }
+            predicate: nameMatchPredicate(name)
         )
         fetchDescriptor.fetchLimit = 1
         return try modelContext.fetch(fetchDescriptor).first
@@ -52,7 +59,7 @@ extension JModelObject {
     /// FInd a set of models - order undefined?
     static func find(names: [String], modelContext: ModelContext) throws -> [Self] {
         let fetchDescriptor = FetchDescriptor<Self>(
-            predicate: #Predicate { names.contains($0.name) } /* XXX sortorder */
+            predicate: nameMatchPredicate(names)
         )
         return try modelContext.fetch(fetchDescriptor)
     }
@@ -125,3 +132,4 @@ extension String {
         isEmpty ? nil : self
     }
 }
+

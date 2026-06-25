@@ -242,7 +242,7 @@ struct RecipeFromURLIntent: AppIntent {
         var bestBook: Book? = nil
         for book in books {
             bestBook = book
-            if book.name.localizedCaseInsensitiveContains("internet") {
+            if book.shortName.localizedCaseInsensitiveContains("internet") {
                 break
             }
         }

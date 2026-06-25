@@ -18,6 +18,7 @@ extension CurrentSchema {
 
         /// Name of the SF Symbol for the Book
         var symbolName: String
+        var systemImageName: String { symbolName }
 
         /// Does this book have page numbers?
         var hasPageNumbers: Bool
@@ -60,5 +61,26 @@ extension Book {
 }
 
 extension Book: JModelObject {
-    var name: String { shortName }
+    static func nameMatchPredicate(_ names: [String]) -> Predicate<Book> {
+        #Predicate { names.contains($0.shortName) }
+    }
+}
+
+// MARK: Actions - from UI & intents
+
+import AppIntents
+
+extension Book {
+    func doDeleteAction(modelContext: ModelContext, fromIntent: Bool = false) {
+        Log.log("Delete book '\(shortName)'")
+        modelContext.updateModel { _ in
+            modelContext.delete(self)
+        }
+
+        if !fromIntent {
+            IntentDonationManager.shared.donate(
+                intent: BookDeleteIntent(book: BookEntity(self))
+            )
+        }
+    }
 }
