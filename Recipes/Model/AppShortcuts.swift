@@ -25,6 +25,14 @@ final class AppShortcuts: AppShortcutsProvider {
             shortTitle: "Plan a recipe",
             systemImageName: "calendar.badge.minus"
         )
+        AppShortcut(
+            intent: RecipePinIntent(),
+            phrases: [
+                "Pin in \(.applicationName)"
+            ],
+            shortTitle: "Pin a recipe",
+            systemImageName: "pin.fill"
+        )
         AppShortcut(intent: RecipeFromURLIntent(),
                     phrases: [
                         "Create recipe in \(.applicationName)"

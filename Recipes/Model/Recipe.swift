@@ -319,8 +319,10 @@ extension Recipe {
 
 // MARK: Actions - from UI & intents
 
+import AppIntents
+
 extension Recipe {
-    func doCookAction(modelContext: ModelContext) {
+    func doCookAction(modelContext: ModelContext, fromIntent: Bool = false) {
         Log.log("Update cooked for recipe '\(name)'")
         modelContext.updateModel { _ in
             updateLastCookedTime()
@@ -330,30 +332,54 @@ extension Recipe {
             lifecycle = .library
             setSortOrderForLifecyle(modelContext: modelContext)
         }
+
+        if !fromIntent {
+            IntentDonationManager.shared.donate(
+                intent: RecipeCookIntent(recipe: RecipeEntity(self))
+            )
+        }
     }
 
-    func doPlanAction(modelContext: ModelContext) {
+    func doPlanAction(modelContext: ModelContext, fromIntent: Bool = false) {
         let next = planActionNextState
         Log.log("Updated recipe '\(name)' to \(next)")
         modelContext.updateModel { _ in
             lifecycle = next
             setSortOrderForLifecyle(modelContext: modelContext)
         }
+
+        if !fromIntent {
+            IntentDonationManager.shared.donate(
+                intent: RecipePlanIntent(recipe: RecipeEntity(self))
+            )
+        }
     }
 
-    func doPinAction(modelContext: ModelContext) {
+    func doPinAction(modelContext: ModelContext, fromIntent: Bool = false) {
         let next = pinActionNextState
         Log.log("Updated recipe '\(name)' to \(next)")
         modelContext.updateModel { _ in
             lifecycle = next
             setSortOrderForLifecyle(modelContext: modelContext)
         }
+
+        if !fromIntent {
+            IntentDonationManager.shared.donate(
+                intent: RecipePinIntent(recipe: RecipeEntity(self))
+            )
+        }
     }
 
-    func doDeleteAction(modelContext: ModelContext) {
+    func doDeleteAction(modelContext: ModelContext, fromIntent: Bool = false) {
         Log.log("Delete recipe '\(name)'")
         modelContext.updateModel { _ in
             modelContext.delete(self)
+        }
+
+        if !fromIntent {
+            IntentDonationManager.shared.donate(
+                intent: RecipeDeleteIntent(recipe: RecipeEntity(self))
+            )
         }
     }
 }

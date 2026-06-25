@@ -111,7 +111,7 @@ struct RecipeCookIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         let modelContext = DatabaseLoader.intentsModelContext
         let recipeModel = try Recipe.find(entity: recipe, modelContext: modelContext)
-        recipeModel.doCookAction(modelContext: modelContext)
+        recipeModel.doCookAction(modelContext: modelContext, fromIntent: true)
         return .result()
     }
 }
@@ -140,12 +140,70 @@ struct RecipePlanIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         let modelContext = DatabaseLoader.intentsModelContext
         let recipeModel = try Recipe.find(entity: recipe, modelContext: modelContext)
-        recipeModel.doPlanAction(modelContext: modelContext)
+        recipeModel.doPlanAction(modelContext: modelContext, fromIntent: true)
         return .result()
     }
 }
 
 extension RecipePlanIntent {
+    init(recipe: RecipeEntity) {
+        self.recipe = recipe
+    }
+}
+
+// MARK: AppIntent - Recipe Pin(/Unpin) Intent
+
+struct RecipePinIntent: AppIntent {
+    static let title: LocalizedStringResource = "Pin Recipe"
+
+    static let description = IntentDescription("Pin a recipe to cook later.")
+
+    @Parameter(title: "Recipe", description: "The recipe to pin")
+    var recipe: RecipeEntity
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Pin \(\.$recipe)")
+    }
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        let modelContext = DatabaseLoader.intentsModelContext
+        let recipeModel = try Recipe.find(entity: recipe, modelContext: modelContext)
+        recipeModel.doPinAction(modelContext: modelContext, fromIntent: true)
+        return .result()
+    }
+}
+
+extension RecipePinIntent {
+    init(recipe: RecipeEntity) {
+        self.recipe = recipe
+    }
+}
+
+// MARK: AppIntent - Recipe Delete Intent
+
+struct RecipeDeleteIntent: AppIntent {
+    static let title: LocalizedStringResource = "Delete Recipe"
+
+    static let description = IntentDescription("Delete a recipe.")
+
+    @Parameter(title: "Recipe", description: "The recipe to delete")
+    var recipe: RecipeEntity
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Delete \(\.$recipe)")
+    }
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        let modelContext = DatabaseLoader.intentsModelContext
+        let recipeModel = try Recipe.find(entity: recipe, modelContext: modelContext)
+        recipeModel.doDeleteAction(modelContext: modelContext, fromIntent: true)
+        return .result()
+    }
+}
+
+extension RecipeDeleteIntent {
     init(recipe: RecipeEntity) {
         self.recipe = recipe
     }
