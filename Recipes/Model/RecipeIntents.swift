@@ -37,11 +37,21 @@ struct RecipeEntity: IndexedEntity {
                               image: .init(systemName: kind.systemImageName))
     }
 
+    static func identifier(_ id: ID) -> EntityIdentifier {
+        EntityIdentifier(for: Self.self, identifier: id)
+    }
+
     init(_ recipe: Recipe) {
         self.id = recipe.name
         self.kind = recipe.kind
         self.name = recipe.name
         self.location = recipe.location
+    }
+}
+
+extension Recipe {
+    var entityIdentifier: EntityIdentifier {
+        RecipeEntity.identifier(name)
     }
 }
 
@@ -274,5 +284,23 @@ struct RecipeFromURLIntent: AppIntent {
         try? modelContext.save()
 
         return .result(value: RecipeEntity(recipe))
+    }
+}
+
+// MARK: AppIntent - Open Recipe In App Intent
+
+//@AppIntent(schema: .system.open)
+struct OpenRecipeIntent: OpenIntent {
+    static let title: LocalizedStringResource = "Open Recipe"
+
+    @Parameter(title: "Recipe")
+    var target: RecipeEntity
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        let modelContext = DatabaseLoader.intentsModelContext
+        let recipe = try Recipe.find(entity: target, modelContext: modelContext)
+        UIState.shared.show(recipe: recipe)
+        return .result()
     }
 }

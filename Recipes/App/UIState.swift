@@ -65,8 +65,10 @@ class UIState {
     }
     let booksTab = BooksTab()
 
-    init() {
+    private init() {
     }
+
+    static var shared = UIState()
 }
 
 

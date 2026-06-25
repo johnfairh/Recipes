@@ -74,6 +74,9 @@ struct CreateEditBookView: View {
         .onAppear {
             onAppearFocus = true
         }
+        .userActivity(isCreate ? "com.tml.event.book.create" : "com.tml.event.book.edit") { activity in
+            activity.appEntityIdentifier = book.entityIdentifier
+        }
     }
 
     private var canSave: Bool {

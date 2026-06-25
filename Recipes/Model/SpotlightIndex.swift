@@ -8,6 +8,12 @@
 import CoreSpotlight
 import AppIntents
 
+///
+/// Wrap up Spotlight interactions.
+///
+/// The docs say that `CSSearchableIndex` is not thread-safe.  Example code doesn't really
+/// do this unless explicitly via MainActor, but do that here.
+///
 struct SpotlightIndex {
     let index: CSSearchableIndex
 
@@ -18,7 +24,7 @@ struct SpotlightIndex {
     static let shared = SpotlightIndex()
 
     private static func index<I: IndexedEntity>(entity: I) {
-        Task {
+        Task { @MainActor in
             do {
                 try await shared.index.indexAppEntities([entity])
             } catch {
@@ -28,7 +34,7 @@ struct SpotlightIndex {
     }
 
     private static func delete<I: IndexedEntity>(entityType: I.Type, id: I.ID) {
-        Task {
+        Task { @MainActor in
             do {
                 try await shared.index.deleteAppEntities(
                     identifiedBy: [id], ofType: entityType)

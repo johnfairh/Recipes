@@ -19,7 +19,7 @@ struct PreviewObjects: PreviewModifier {
     func body(content: Content, context: ModelContainer) -> some View {
         content
             .modelContainer(context)
-            .environment(UIState())
+            .environment(UIState.shared)
             .environment(Log.shared)
     }
 }

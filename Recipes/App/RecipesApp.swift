@@ -16,7 +16,7 @@ struct RecipesApp: App {
         }
         .modelContainer(DatabaseLoader.modelContainer)
         .environment(Log.shared)
-        .environment(UIState())
+        .environment(UIState.shared)
     }
 }
 

@@ -85,7 +85,9 @@ struct RecipeView: View {
         .sheet(isPresented: $isShowingEdit) {
             CreateEditRecipeView(parentModelContext: modelContext, recipe: recipe)
         }
-        .recipeEntityIdentifier(recipe)
+        .userActivity("com.tml.event.recipe.view") { activity in
+            activity.appEntityIdentifier = recipe.entityIdentifier
+        }
         Spacer()
     }
 }

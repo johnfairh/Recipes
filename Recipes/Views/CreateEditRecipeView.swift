@@ -110,7 +110,9 @@ struct CreateEditRecipeView: View {
             }
             .navigationTitle(sheetTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .recipeEntityIdentifier(recipe)
+            .userActivity(isCreate ? "com.tml.event.recipe.create" : "com.tml.event.recipe.edit") { activity in
+                activity.appEntityIdentifier = recipe.entityIdentifier
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", systemImage: "xmark", role: .cancel) {

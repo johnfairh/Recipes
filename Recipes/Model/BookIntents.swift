@@ -35,11 +35,21 @@ struct BookEntity: IndexedEntity {
                                      image: .init(systemName: imageName))
     }
 
+    static func identifier(_ id: ID) -> EntityIdentifier {
+        EntityIdentifier(for: Self.self, identifier: id)
+    }
+
     init(_ book: Book) {
         self.id = book.shortName
         self.systemImageName = book.systemImageName
         self.name = book.shortName
         self.details = book.longName
+    }
+}
+
+extension Book {
+    var entityIdentifier: EntityIdentifier {
+        BookEntity.identifier(shortName)
     }
 }
 
