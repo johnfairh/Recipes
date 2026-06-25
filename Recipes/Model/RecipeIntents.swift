@@ -10,7 +10,7 @@ import SwiftData
 
 // MARK: AppEntity - Recipe
 
-struct RecipeEntity: AppEntity {
+struct RecipeEntity: IndexedEntity {
     static var typeDisplayRepresentation = TypeDisplayRepresentation("Recipe")
 
     static var defaultQuery = RecipeEntityQuery()
@@ -79,7 +79,7 @@ enum RecipeKindAppEnum: String, AppEnum {
 
 // MARK: AppIntent - Recipe Queries
 
-struct RecipeEntityQuery: EntityQuery {
+struct RecipeEntityQuery: EnumerableEntityQuery {
     @MainActor
     func entities(for identifiers: [RecipeEntity.ID]) async throws -> [RecipeEntity] {
         try Recipe.find(names: identifiers, modelContext: DatabaseLoader.intentsModelContext)
@@ -88,6 +88,11 @@ struct RecipeEntityQuery: EntityQuery {
 
     @MainActor
     func suggestedEntities() async throws -> [RecipeEntity] {
+        try await allEntities()
+    }
+
+    @MainActor
+    func allEntities() async throws -> [RecipeEntity] {
         try Recipe.all(modelContext: DatabaseLoader.intentsModelContext)
             .map(RecipeEntity.init)
     }

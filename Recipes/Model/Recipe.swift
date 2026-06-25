@@ -337,6 +337,7 @@ extension Recipe {
             setSortOrderForLifecyle(modelContext: modelContext)
         }
 
+        SpotlightIndex.update(self)
         if !fromIntent {
             IntentDonationManager.shared.donate(
                 intent: RecipeCookIntent(recipe: RecipeEntity(self))
@@ -352,6 +353,7 @@ extension Recipe {
             setSortOrderForLifecyle(modelContext: modelContext)
         }
 
+        SpotlightIndex.update(self)
         if !fromIntent {
             IntentDonationManager.shared.donate(
                 intent: RecipePlanIntent(recipe: RecipeEntity(self))
@@ -367,6 +369,7 @@ extension Recipe {
             setSortOrderForLifecyle(modelContext: modelContext)
         }
 
+        SpotlightIndex.update(self)
         if !fromIntent {
             IntentDonationManager.shared.donate(
                 intent: RecipePinIntent(recipe: RecipeEntity(self))
@@ -376,6 +379,7 @@ extension Recipe {
 
     func doDeleteAction(modelContext: ModelContext, fromIntent: Bool = false) {
         Log.log("Delete recipe '\(name)'")
+        SpotlightIndex.delete(self)
         modelContext.updateModel { _ in
             modelContext.delete(self)
         }

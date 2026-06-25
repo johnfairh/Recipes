@@ -150,6 +150,7 @@ struct CreateEditRecipeView: View {
         } else {
             Log.log("Commit changes to recipe '\(recipe.name)'")
         }
+        SpotlightIndex.update(recipe)
         modelContext.trySave()
     }
 }

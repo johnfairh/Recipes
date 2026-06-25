@@ -10,7 +10,7 @@ import SwiftData
 
 // MARK: AppEntity - Book
 
-struct BookEntity: AppEntity {
+struct BookEntity: IndexedEntity {
     static var typeDisplayRepresentation = TypeDisplayRepresentation("Recipe")
 
     static var defaultQuery = BookEntityQuery()
@@ -45,7 +45,7 @@ struct BookEntity: AppEntity {
 
 // MARK: AppIntent - Book Queries
 
-struct BookEntityQuery: EntityQuery {
+struct BookEntityQuery: EnumerableEntityQuery {
     @MainActor
     func entities(for identifiers: [BookEntity.ID]) async throws -> [BookEntity] {
         try Book.find(names: identifiers, modelContext: DatabaseLoader.intentsModelContext)
@@ -54,6 +54,11 @@ struct BookEntityQuery: EntityQuery {
 
     @MainActor
     func suggestedEntities() async throws -> [BookEntity] {
+        try await allEntities()
+    }
+
+    @MainActor
+    func allEntities() async throws -> [BookEntity] {
         try Book.all(modelContext: DatabaseLoader.intentsModelContext)
             .map(BookEntity.init)
     }
