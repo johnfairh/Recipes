@@ -12,8 +12,6 @@ struct RecipeFilterItemView: View {
     @Binding var filter: RecipeFilter
     let books: [Book]
 
-    @State var string = "boo"
-
     var body: some View {
         switch filter.kind {
         case .name, .url, .quantity, .notes:

@@ -91,6 +91,7 @@ struct CreateEditBookView: View {
             Log.log("Commit changes to book '\(book.shortName)'")
         }
 
+        SpotlightIndex.update(book)
         modelContext.trySave()
     }
 }
